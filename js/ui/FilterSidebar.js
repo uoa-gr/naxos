@@ -170,7 +170,13 @@ export class FilterSidebar {
         cb.className = 'entry-checkbox';
         cb.dataset.layer = item.layerId;
         cb.dataset.entryIndex = String(item.entryIndex);
-        cb.checked = true;
+        // Reflect the CURRENT visibility state, not always-on. The full list
+        // is rebuilt on every scale-rule change, so without this read the
+        // user's manual toggle-offs would visually reset to "on" each time.
+        const hidden = this.layerManager && this.layerManager._hiddenEntries
+            ? this.layerManager._hiddenEntries.get(item.layerId)
+            : null;
+        cb.checked = !(hidden && hidden.has(item.entryIndex));
         // Stop click bubbling so the row's gear-click target check works
         cb.addEventListener('click', (e) => e.stopPropagation());
 

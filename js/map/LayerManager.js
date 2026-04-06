@@ -543,6 +543,14 @@ export class LayerManager {
                         iconAnchor: [size / 2, size / 2],
                     }));
 
+                    // If the user has explicitly toggled this entry off via the
+                    // sidebar, leave it hidden — do NOT let scale rules un-hide it.
+                    if (marker._naxosHidden) {
+                        marker.setOpacity(0);
+                        if (marker.options) marker.options.interactive = false;
+                        return;
+                    }
+
                     // Apply effective scale rule (user override or default)
                     const rule = this._getRuleFor(layerId, marker._naxosEntryIndex, entry);
                     const visible = ScaleRulesStore.isVisibleAtZoom(rule, currentZoom);
