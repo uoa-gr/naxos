@@ -72,11 +72,15 @@ export class FilterSidebar {
             }, baseItems));
         }
 
-        // Environment groups
+        // Environment groups — force collapsed by default so the filter
+        // sidebar opens to a clean short list and the user can drill in.
         for (const group of LAYER_GROUPS) {
             const items = groupItems[group.id];
             if (items && items.length) {
-                container.appendChild(this._buildGroupSection(group, items));
+                container.appendChild(this._buildGroupSection(
+                    { ...group, expanded: false },
+                    items,
+                ));
             }
         }
     }

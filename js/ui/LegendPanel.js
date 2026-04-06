@@ -147,7 +147,7 @@ export class LegendPanel {
             const { section: groupSection, body: itemsDiv } = this._makeCollapsibleSection(
                 group.label,
                 group.labelGr,
-                { expanded: group.expanded }
+                { expanded: true }, // legend: all environments expanded so the full key is visible
             );
             groupSection.classList.add('legend-subgroup');
 
@@ -312,11 +312,12 @@ export class LegendPanel {
         const teamList = document.createElement('ul');
         teamList.className = 'project-team-list';
         const members = [
-            { name: 'Dr. Niki Evelpidou', role: 'Professor, N.K.U.A.' },
-            { name: 'Dr. Irene Zananiri', role: 'H.S.G.M.E.' },
-            { name: 'Alexandra Zervakou, MSc', role: 'H.S.G.M.E.' },
-            { name: 'Dr. Giannis Saitis', role: 'N.K.U.A.' },
-            { name: 'Evangelos Spyrou, MSc', role: 'N.K.U.A.' },
+            { name: 'Niki Evelpidou',    role: 'Professor, N.K.U.A.' },
+            { name: 'Giannis Saitis',    role: 'N.K.U.A.' },
+            { name: 'Evangelos Spyrou',  role: 'N.K.U.A.' },
+            { name: 'Irene Zananiri',    role: 'H.S.G.M.E.' },
+            { name: 'Alexandra Zervakou', role: 'H.S.G.M.E.' },
+            { name: 'Alexandros Liaskos', role: 'N.K.U.A. \u00B7 Webmap developer' },
         ];
         for (const m of members) {
             const li = document.createElement('li');
@@ -333,12 +334,25 @@ export class LegendPanel {
         teamCard.appendChild(teamList);
         section.appendChild(teamCard);
 
-        // --- Publication ---
+        // --- Citation ---
+        const citeCard = document.createElement('div');
+        citeCard.className = 'project-card';
+        const citeLabel = document.createElement('div');
+        citeLabel.className = 'project-card-label';
+        citeLabel.textContent = 'Citation \u00B7 \u0391\u03BD\u03B1\u03C6\u03BF\u03C1\u03AC';
+        const citeBody = document.createElement('div');
+        citeBody.className = 'project-card-body project-citation';
+        citeBody.textContent = 'Evelpidou, N., Saitis, G., Spyrou, E., Zananiri, I., Zervakou, A., & Liaskos, A. Detailed geomorphological mapping of Naxos island, Greece, at 1:50,000 scale. Journal of Maps (in press).';
+        citeCard.appendChild(citeLabel);
+        citeCard.appendChild(citeBody);
+        section.appendChild(citeCard);
+
+        // --- Webmap credit ---
         const meta = document.createElement('div');
         meta.className = 'project-meta';
-        const year = document.createElement('span');
-        year.textContent = 'Publication \u00B7 2025';
-        meta.appendChild(year);
+        const webmapNote = document.createElement('span');
+        webmapNote.textContent = 'Webmap developed by Alexandros Liaskos';
+        meta.appendChild(webmapNote);
         section.appendChild(meta);
 
         this.creditsContainer.appendChild(collapsible);

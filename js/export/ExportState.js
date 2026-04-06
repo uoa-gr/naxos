@@ -164,7 +164,7 @@ export function createExportState({ person = 'NKUA' } = {}) {
             }),
             makeElement('el_credits', 'credits', positions.el_credits, {
                 mandatory: true,
-                text: 'Evelpidou, N., Zananiri, I., Zervakou, A., Saitis, G., & Spyrou, E. (2025). Geomorphological Map of Naxos, 1:50,000. National and Kapodistrian University of Athens (N.K.U.A.) & Hellenic Survey of Geology \u0026 Mineral Exploration (H.S.G.M.E.).',
+                text: 'Evelpidou, N., Saitis, G., Spyrou, E., Zananiri, I., Zervakou, A., & Liaskos, A. Detailed geomorphological mapping of Naxos island, Greece, at 1:50,000 scale. Journal of Maps (in press). Webmap developed by A. Liaskos.',
                 fontSize: 7,
                 align: 'center',
             }),

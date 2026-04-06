@@ -36,19 +36,37 @@
     <div id="app">
         <!-- Welcome Modal -->
         <div id="welcome-modal" class="modal welcome-modal">
-            <div class="modal-content">
-                <button class="modal-close">&times;</button>
-                <div class="welcome-body">
-                    <h2>Geomorphological Map of Naxos</h2>
-                    <h3>&#915;&#949;&#969;&#956;&#959;&#961;&#966;&#959;&#955;&#959;&#947;&#953;&#954;&#972;&#962; &#935;&#940;&#961;&#964;&#951;&#962; &#925;&#940;&#958;&#959;&#965;</h3>
-                    <p>Interactive WebGIS presenting the geomorphological mapping of Naxos island at a scale of 1:50,000.</p>
-                    <p>&#916;&#953;&#945;&#948;&#961;&#945;&#963;&#964;&#953;&#954;&#972; WebGIS &#947;&#949;&#969;&#956;&#959;&#961;&#966;&#959;&#955;&#959;&#947;&#953;&#954;&#942;&#962; &#967;&#945;&#961;&#964;&#959;&#947;&#961;&#940;&#966;&#951;&#963;&#951;&#962; &#964;&#951;&#962; &#925;&#940;&#958;&#959;&#965; &#963;&#949; &#954;&#955;&#943;&#956;&#945;&#954;&#945; 1:50.000.</p>
-                    <div class="welcome-logos">
-                        <img src="https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/images/nkua_logo_en.jpg" alt="NKUA" />
-                        <img src="https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/images/eagme_logo_en.png" alt="HSGME" />
-                    </div>
-                    <button id="enter-webgis" class="btn-enter">Enter Map &#8212; &#917;&#943;&#963;&#959;&#948;&#959;&#962; &#963;&#964;&#959;&#957; &#935;&#940;&#961;&#964;&#951;</button>
+            <div class="modal-content welcome-content">
+                <button class="modal-close" aria-label="Close">&times;</button>
+
+                <div class="welcome-logos">
+                    <img src="https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/images/nkua_logo_en.jpg" alt="NKUA" />
+                    <img src="https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/images/eagme_logo_en.png" alt="EAGME" />
                 </div>
+
+                <h2 class="welcome-title">Geomorphological Map of Naxos</h2>
+                <p class="welcome-title-gr">&#915;&#949;&#969;&#956;&#959;&#961;&#966;&#959;&#955;&#959;&#947;&#953;&#954;&#972;&#962; &#935;&#940;&#961;&#964;&#951;&#962; &#925;&#940;&#958;&#959;&#965;</p>
+
+                <p class="welcome-lede">An interactive web map of the geomorphological landforms and lithology of Naxos island, Greece &#8212; based on the 1:50,000 cartographic survey by N.K.U.A. and EAGME.</p>
+
+                <div class="welcome-section">
+                    <div class="welcome-section-label">Scientific Team</div>
+                    <ul class="welcome-team">
+                        <li><span class="welcome-team-name">Niki Evelpidou</span><span class="welcome-team-role">Professor, N.K.U.A.</span></li>
+                        <li><span class="welcome-team-name">Giannis Saitis</span><span class="welcome-team-role">N.K.U.A.</span></li>
+                        <li><span class="welcome-team-name">Evangelos Spyrou</span><span class="welcome-team-role">N.K.U.A.</span></li>
+                        <li><span class="welcome-team-name">Irene Zananiri</span><span class="welcome-team-role">EAGME</span></li>
+                        <li><span class="welcome-team-name">Alexandra Zervakou</span><span class="welcome-team-role">EAGME</span></li>
+                        <li><span class="welcome-team-name">Alexandros Liaskos</span><span class="welcome-team-role">N.K.U.A. &middot; webmap</span></li>
+                    </ul>
+                </div>
+
+                <div class="welcome-section">
+                    <div class="welcome-section-label">Citation</div>
+                    <p class="welcome-cite">Evelpidou, N., Saitis, G., Spyrou, E., Zananiri, I., Zervakou, A., &amp; Liaskos, A. <em>Detailed geomorphological mapping of Naxos island, Greece, at 1:50,000 scale.</em> Journal of Maps (in press).</p>
+                </div>
+
+                <button id="enter-webgis" class="welcome-enter">Enter the map &#8594;</button>
             </div>
         </div>
 

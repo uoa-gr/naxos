@@ -45,12 +45,10 @@ export class ModalManager {
     }
 
     showWelcome() {
-        // Check if already seen (use sessionStorage)
-        if (sessionStorage.getItem('naxos-welcome-seen')) return;
+        // Show on every page load (no session memory).
         setTimeout(() => {
             this.welcomeModal?.classList.add('active');
-            sessionStorage.setItem('naxos-welcome-seen', '1');
-        }, 500);
+        }, 350);
     }
 
     showFeatureDetails(feature, layerId) {
