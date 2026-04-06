@@ -132,7 +132,6 @@ class NaxosGeomorphApp {
         });
 
         await safeRun('ExportController', async () => {
-            const { LAYERS } = await import('./data/LayerConfig.js');
             _setLayersCache(LAYERS);
             this.exportController = new ExportController(
                 this.eventBus,
