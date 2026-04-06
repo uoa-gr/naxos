@@ -158,12 +158,13 @@ export function createExportState({ person = 'NKUA' } = {}) {
             makeElement('el_scale', 'scalebar', positions.el_scale, { unit: 'metric' }),
             makeElement('el_north', 'north-arrow', positions.el_north, { style: 'simple' }),
             makeElement('el_date', 'date', positions.el_date, {
-                text: 'Generated ' + today,
+                text: today,
                 fontSize: 8,
+                align: 'right',
             }),
             makeElement('el_credits', 'credits', positions.el_credits, {
                 mandatory: true,
-                text: 'NKUA \u00B7 EAGME \u00B7 Scientific Team: Evelpidou, Zananiri, Zervakou, Saitis, Spyrou \u2014 2025',
+                text: 'Evelpidou, N., Zananiri, I., Zervakou, A., Saitis, G., & Spyrou, E. (2025). Geomorphological Map of Naxos, 1:50,000. National and Kapodistrian University of Athens (N.K.U.A.) & Hellenic Survey of Geology \u0026 Mineral Exploration (H.S.G.M.E.).',
                 fontSize: 7,
                 align: 'center',
             }),

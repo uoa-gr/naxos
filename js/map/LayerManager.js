@@ -163,8 +163,9 @@ export class LayerManager {
                 pointToLayer: (feature, latlng) => {
                     const marker = this._createPointMarker(layerId, feature, latlng);
 
-                    // Click: show feature detail modal
+                    // Click: show feature detail modal (suppressed during export draw mode)
                     marker.on('click', () => {
+                        if (window.__naxosDrawing) return;
                         this.eventBus.emit('feature:clicked', { feature, layerId });
                     });
 
@@ -184,8 +185,9 @@ export class LayerManager {
                 style: (feature) => this.getFeatureStyle(layerId, feature),
                 pane: paneName,
                 onEachFeature: (feature, layer) => {
-                    // Click: show feature detail modal
+                    // Click: show feature detail modal (suppressed during export draw mode)
                     layer.on('click', () => {
+                        if (window.__naxosDrawing) return;
                         this.eventBus.emit('feature:clicked', { feature, layerId });
                     });
 

@@ -233,12 +233,27 @@ export class LayoutDesigner {
                 inner.classList.add('export-el-map-placeholder');
                 inner.textContent = '\u25A1 Map';
                 return inner;
-            case 'title':
-                inner.textContent = el.text || '';
-                if (el.fontSize) inner.style.fontSize = el.fontSize + 'pt';
-                if (el.fontWeight) inner.style.fontWeight = String(el.fontWeight);
+            case 'title': {
+                inner.style.flexDirection = 'column';
                 if (el.align) inner.style.textAlign = el.align;
+                const primary = document.createElement('div');
+                primary.textContent = el.text || '';
+                if (el.fontSize) primary.style.fontSize = el.fontSize + 'pt';
+                if (el.fontWeight) primary.style.fontWeight = String(el.fontWeight);
+                primary.style.lineHeight = '1.1';
+                inner.appendChild(primary);
+                if (el.textGr) {
+                    const secondary = document.createElement('div');
+                    secondary.textContent = el.textGr;
+                    secondary.style.fontSize = ((el.fontSize || 16) * 0.75) + 'pt';
+                    secondary.style.fontWeight = '300';
+                    secondary.style.color = '#555';
+                    secondary.style.lineHeight = '1.1';
+                    secondary.style.marginTop = '2px';
+                    inner.appendChild(secondary);
+                }
                 return inner;
+            }
             case 'subtitle':
             case 'date':
             case 'credits':

@@ -236,6 +236,11 @@ export class AreaSelector {
         container.style.cursor = 'crosshair';
         map.doubleClickZoom.disable();
 
+        // Suppress feature click handlers on the live map while drawing,
+        // otherwise a click that is meant to set a corner opens a feature
+        // detail modal instead. LayerManager's click handlers check this flag.
+        window.__naxosDrawing = true;
+
         let tempLayer = null;
         let firstPoint = null;
         const polyPoints = [];
@@ -249,6 +254,7 @@ export class AreaSelector {
             if (tempLayer && map.hasLayer(tempLayer)) map.removeLayer(tempLayer);
             tempLayer = null;
             this._hideDrawBanner();
+            window.__naxosDrawing = false;
         };
 
         // Expose cleanup so Escape handler can call it
