@@ -7,6 +7,8 @@
 
 import { LAYERS, LAYER_GROUPS } from '../data/LayerConfig.js';
 import { debounce, escapeHtml } from '../utils/helpers.js';
+import { scaleRules } from '../data/ScaleRules.js';
+import { ScaleRuleEditor } from './ScaleRuleEditor.js';
 
 export class FilterSidebar {
     constructor(eventBus, stateManager, layerManager) {
@@ -22,6 +24,10 @@ export class FilterSidebar {
         this._renderLayerControls();
         this._renderSearchPanel();
         this._bindEvents();
+        // Re-render the layer controls whenever the user changes a scale
+        // rule so the pills update immediately. The map's visibility is
+        // refreshed by LayerManager which subscribes to the same store.
+        scaleRules.subscribe(() => this._renderLayerControls());
         return true;
     }
 
@@ -48,8 +54,11 @@ export class FilterSidebar {
                 label: entry.label || layer.label,
                 labelGr: entry.labelGr || layer.labelGr,
                 geomType: layer.geomType,
-                // Effective minZoom: entry-level overrides layer-level
-                minZoom: entry.minZoom || layer.minZoom || null,
+                // Defaults from LayerConfig (entry-level overrides layer-level)
+                defaults: {
+                    minZoom: entry.minZoom != null ? entry.minZoom : (layer.minZoom != null ? layer.minZoom : null),
+                    maxZoom: entry.maxZoom != null ? entry.maxZoom : null,
+                },
             }));
             if (targetId === 'base') {
                 baseItems.push(...items);
@@ -131,46 +140,119 @@ export class FilterSidebar {
         itemsDiv.className = 'layer-group-layers' + (group.expanded ? '' : ' collapsed');
 
         for (const item of items) {
-            const toggle = document.createElement('label');
-            toggle.className = 'layer-toggle';
-            if (item.minZoom) toggle.classList.add('has-min-zoom');
-
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.className = 'entry-checkbox';
-            cb.dataset.layer = item.layerId;
-            cb.dataset.entryIndex = String(item.entryIndex);
-            cb.checked = true;
-
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'layer-name';
-            nameSpan.textContent = item.label;
-
-            toggle.appendChild(cb);
-            toggle.appendChild(nameSpan);
-
-            if (item.labelGr && item.labelGr !== item.label) {
-                const grSpan = document.createElement('span');
-                grSpan.className = 'layer-name-gr';
-                grSpan.textContent = item.labelGr;
-                toggle.appendChild(grSpan);
-            }
-
-            // Scale-dependent indicator: small "zoom" hint when feature only shows at higher zoom
-            if (item.minZoom) {
-                const hint = document.createElement('span');
-                hint.className = 'layer-minzoom-hint';
-                hint.textContent = '\u2316 z\u2265' + item.minZoom;
-                hint.title = 'Visible at zoom level ' + item.minZoom + ' and above';
-                toggle.appendChild(hint);
-            }
-
-            itemsDiv.appendChild(toggle);
+            itemsDiv.appendChild(this._buildItemRow(item));
         }
 
         section.appendChild(header);
         section.appendChild(itemsDiv);
         return section;
+    }
+
+    /**
+     * Build one entry row inside a group section: checkbox, name+greek,
+     * scale rule pill (if any), gear button to open the rule editor.
+     * Uses a <div> (not <label>) so the gear and pill are not click-forwarded
+     * to the checkbox.
+     */
+    _buildItemRow(item) {
+        const row = document.createElement('div');
+        row.className = 'layer-toggle';
+        row.dataset.layer = item.layerId;
+        row.dataset.entryIndex = String(item.entryIndex);
+
+        // Effective rule (user override merged with defaults)
+        const rule = scaleRules.getEffective(item.layerId, item.entryIndex, item.defaults);
+        const hasRule = rule.minZoom != null || rule.maxZoom != null;
+        if (hasRule) row.classList.add('has-min-zoom');
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'entry-checkbox';
+        cb.dataset.layer = item.layerId;
+        cb.dataset.entryIndex = String(item.entryIndex);
+        cb.checked = true;
+        // Stop click bubbling so the row's gear-click target check works
+        cb.addEventListener('click', (e) => e.stopPropagation());
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'layer-name';
+        nameSpan.textContent = item.label;
+
+        row.appendChild(cb);
+        row.appendChild(nameSpan);
+
+        if (item.labelGr && item.labelGr !== item.label) {
+            const grSpan = document.createElement('span');
+            grSpan.className = 'layer-name-gr';
+            grSpan.textContent = item.labelGr;
+            row.appendChild(grSpan);
+        }
+
+        // Rule pill — shows the effective minZoom/maxZoom (if any)
+        if (hasRule) {
+            const pill = document.createElement('span');
+            pill.className = 'layer-minzoom-hint';
+            if (rule.source === 'user') pill.classList.add('is-user-rule');
+            pill.textContent = this._formatRulePill(rule);
+            pill.title = this._formatRuleTitle(rule);
+            row.appendChild(pill);
+        }
+
+        // Gear button — opens the ScaleRuleEditor modal
+        const gear = document.createElement('button');
+        gear.type = 'button';
+        gear.className = 'layer-rule-btn';
+        gear.title = 'Set scale rule';
+        gear.setAttribute('aria-label', 'Set scale rule');
+        gear.textContent = '\u2699'; // gear icon
+        gear.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const map = window.app && window.app.mapManager
+                ? window.app.mapManager.getMap()
+                : null;
+            ScaleRuleEditor.open({
+                layerId: item.layerId,
+                entryIndex: item.entryIndex,
+                label: item.label,
+                labelGr: item.labelGr,
+                defaults: item.defaults,
+                mapInstance: map,
+            });
+        });
+        row.appendChild(gear);
+
+        // Clicking the row body toggles the checkbox (matches the old <label>
+        // behavior the user expects), but only if the click target is not the
+        // gear, the pill, or the checkbox itself.
+        row.addEventListener('click', (e) => {
+            if (e.target === cb) return;
+            if (e.target.classList.contains('layer-rule-btn')) return;
+            if (e.target.classList.contains('layer-minzoom-hint')) return;
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        return row;
+    }
+
+    /** "z\u226514", "z\u226418", "z14\u201318" */
+    _formatRulePill(rule) {
+        if (rule.minZoom != null && rule.maxZoom != null) {
+            return 'z' + rule.minZoom + '\u2013' + rule.maxZoom;
+        }
+        if (rule.minZoom != null) return 'z\u2265' + rule.minZoom;
+        if (rule.maxZoom != null) return 'z\u2264' + rule.maxZoom;
+        return '';
+    }
+
+    _formatRuleTitle(rule) {
+        const parts = [];
+        if (rule.minZoom != null) parts.push('zoom \u2265 ' + rule.minZoom);
+        if (rule.maxZoom != null) parts.push('zoom \u2264 ' + rule.maxZoom);
+        if (parts.length === 0) return 'No scale rule';
+        const tag = rule.source === 'user' ? ' (custom)' : ' (default)';
+        return 'Visible when ' + parts.join(' and ') + tag;
     }
 
     // =========================================================================

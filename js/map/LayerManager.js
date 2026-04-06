@@ -7,6 +7,7 @@
 
 import { LAYERS, LAYER_GROUPS, MAP_DEFAULTS } from '../data/LayerConfig.js';
 import { assetUrl } from '../data/DataManager.js';
+import { scaleRules, ScaleRulesStore } from '../data/ScaleRules.js';
 
 // Mapping from patternIcon filename -> SVG pattern id registered in SvgPatterns
 const PATTERN_ICON_TO_ID = {
@@ -104,10 +105,13 @@ export class LayerManager {
             console.warn(`LayerManager: ${failed} layer(s) failed to load`);
         }
 
-        // Apply initial zoom-based visibility (e.g. contours_50m + per-entry minZoom)
+        // Apply initial zoom-based visibility (layer-level minZoom + per-entry rules)
         this._handleZoomChange();
-        // Defer minZoom apply so polygon paths exist after the layers were added
+        // Defer rule apply so polygon paths exist after the layers were added
         setTimeout(() => this._updateEntryMinZoomVisibility(), 0);
+
+        // React to user-edited scale rules: re-evaluate visibility immediately
+        scaleRules.subscribe(() => this.refreshScaleVisibility());
 
         // Count features and update state
         this._updateFeatureCount();
@@ -448,7 +452,9 @@ export class LayerManager {
         if (entry && entry.symbolIcon) {
             const baseSize = entry.symbolSize || 24;
             const size = this._getScaledIconSize(baseSize);
-            const belowMinZoom = entry.minZoom && this.map.getZoom() < entry.minZoom;
+            const entryIndex = this._findEntryIndex(config, feature);
+            const rule = this._getRuleFor(layerId, entryIndex, entry);
+            const visible = ScaleRulesStore.isVisibleAtZoom(rule, this.map.getZoom());
             const marker = L.marker(latlng, {
                 icon: L.icon({
                     iconUrl: assetUrl('symbols/' + entry.symbolIcon),
@@ -456,10 +462,12 @@ export class LayerManager {
                     iconAnchor: [size / 2, size / 2],
                 }),
                 pane: `layer-z${config.zIndex}`,
-                opacity: belowMinZoom ? 0 : 1,
-                interactive: !belowMinZoom,
+                opacity: visible ? 1 : 0,
+                interactive: visible,
             });
-            // Store the legend entry reference for zoom-based rescaling
+            // Store references for later re-evaluation on zoom or rule change
+            marker._naxosLayerId = layerId;
+            marker._naxosEntryIndex = entryIndex;
             marker._naxosEntry = entry;
             return marker;
         }
@@ -535,22 +543,21 @@ export class LayerManager {
                         iconAnchor: [size / 2, size / 2],
                     }));
 
-                    // Per-entry minZoom: hide via opacity when zoomed out too far
-                    if (entry.minZoom) {
-                        const visible = currentZoom >= entry.minZoom;
-                        marker.setOpacity(visible ? 1 : 0);
-                        if (marker.options) marker.options.interactive = visible;
-                    }
+                    // Apply effective scale rule (user override or default)
+                    const rule = this._getRuleFor(layerId, marker._naxosEntryIndex, entry);
+                    const visible = ScaleRulesStore.isVisibleAtZoom(rule, currentZoom);
+                    marker.setOpacity(visible ? 1 : 0);
+                    if (marker.options) marker.options.interactive = visible;
                 }
             });
         }
     }
 
     /**
-     * Apply per-entry minZoom visibility across all loaded layers.
-     * Hides features whose matching legend entry has a minZoom > current map zoom.
-     * Works for polygons, lines, and any feature with a `_path` element.
-     * Point markers are handled separately by `_updateSymbolScales()`.
+     * Apply per-entry scale rules (user overrides + LayerConfig defaults)
+     * across every polygon/line feature on the map. Point markers are
+     * handled separately by `_updateSymbolScales()`. Re-runs on every
+     * zoomend AND whenever the user changes a rule via the UI editor.
      */
     _updateEntryMinZoomVisibility() {
         const currentZoom = this.map.getZoom();
@@ -562,17 +569,43 @@ export class LayerManager {
                 const feature = featureLayer.feature;
                 if (!feature) return;
                 const entry = this._findMatchingEntry(config, feature);
-                if (!entry || !entry.minZoom) return;
+                const entryIndex = this._findEntryIndex(config, feature);
+                const rule = this._getRuleFor(layerId, entryIndex, entry);
 
                 // Don't override an explicit toggle-off
                 if (featureLayer._naxosHidden) return;
 
-                const visible = currentZoom >= entry.minZoom;
+                const visible = ScaleRulesStore.isVisibleAtZoom(rule, currentZoom);
                 if (featureLayer._path) {
                     featureLayer._path.style.display = visible ? '' : 'none';
                 }
             });
         }
+    }
+
+    /**
+     * Resolve the effective scale rule for an entry. Look up the user
+     * override first; fall back to the entry's compile-time defaults
+     * (entry.minZoom / entry.maxZoom from LayerConfig).
+     *
+     * Returns `null` when there is no rule on either side, so callers
+     * can short-circuit cleanly.
+     */
+    _getRuleFor(layerId, entryIndex, entry) {
+        const defaults = entry || {};
+        const rule = scaleRules.getEffective(layerId, entryIndex, defaults);
+        if (rule.minZoom == null && rule.maxZoom == null) return null;
+        return rule;
+    }
+
+    /**
+     * Public hook used by FilterSidebar / ScaleRuleEditor after the user
+     * changes a rule. Re-applies visibility immediately without waiting
+     * for a zoom event.
+     */
+    refreshScaleVisibility() {
+        this._updateSymbolScales();
+        this._updateEntryMinZoomVisibility();
     }
 
     /**
