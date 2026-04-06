@@ -109,7 +109,18 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
    ======================================================================== */
 
 /* ── Level 1: top-level collapsible sections ────────────────────────────── */
-.legend-group { margin-bottom: 10px; }
+/* The outline wraps the WHOLE group (toggle + items), so it grows when
+   expanded and shrinks when collapsed. */
+.legend-group {
+    margin-bottom: 10px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--background-primary);
+    transition: border-color 0.15s;
+}
+.legend-group:hover { border-color: #c8c8c8; }
+
 .legend-group-toggle {
     display: flex;
     align-items: center;
@@ -118,19 +129,20 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     padding: 9px 12px;
     background: var(--background-secondary);
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    border: none;
     cursor: pointer;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     text-align: left;
-    border-radius: var(--radius-sm);
-    transition: background 0.15s, border-color 0.15s;
+    border-radius: 0;
+    transition: background 0.15s;
 }
-.legend-group-toggle:hover {
-    background: #eef0f2;
-    border-color: var(--text-primary);
+.legend-group-toggle:hover { background: #eef0f2; }
+/* When the group is open, separate the header from the content with a hairline */
+.legend-group-toggle[aria-expanded="true"] {
+    border-bottom: 1px solid var(--border-light);
 }
 .legend-group-arrow {
     font-size: 9px;
@@ -149,7 +161,7 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     text-transform: none;
 }
 .legend-group-items {
-    padding: 8px 0 4px 0;
+    padding: 8px 12px 10px 12px;
 }
 .legend-group-items.collapsed { display: none; }
 
