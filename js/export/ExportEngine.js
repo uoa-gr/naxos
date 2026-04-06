@@ -309,19 +309,28 @@ export class ExportEngine {
     }
 
     _pdfDrawText(doc, el) {
+        // jsPDF: font size is in points, coordinates are in mm.
+        // Convert pt -> mm via 1 pt = 0.3528 mm so the baseline offset
+        // matches the element's physical position on the page.
+        const PT_TO_MM = 0.3528;
+        const fontPt = el.fontSize || 12;
+        const lineMm = fontPt * PT_TO_MM;
+
         doc.setFont('helvetica', el.fontWeight && el.fontWeight >= 600 ? 'bold' : 'normal');
-        doc.setFontSize(el.fontSize || 12);
+        doc.setFontSize(fontPt);
         doc.setTextColor(0, 0, 0);
         const align = el.align || 'left';
         const tx = align === 'center' ? el.x + el.w / 2 :
                    align === 'right'  ? el.x + el.w : el.x;
-        const ty = el.y + (el.fontSize || 12) * 0.35;
+        // Baseline sits ~80% down the line height
+        const ty = el.y + lineMm * 0.8;
         doc.text(el.text || '', tx, ty, { align });
         if (el.textGr) {
+            const fontPtGr = fontPt * 0.75;
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize((el.fontSize || 12) * 0.75);
+            doc.setFontSize(fontPtGr);
             doc.setTextColor(85, 85, 85);
-            doc.text(el.textGr, tx, ty + (el.fontSize || 12) * 0.5, { align });
+            doc.text(el.textGr, tx, ty + lineMm * 1.1, { align });
         }
     }
 
@@ -354,36 +363,41 @@ export class ExportEngine {
         const rowH = rowFontPt * 0.5;
         const swatchMm = rowFontPt * 0.4;
 
+        // Flatten visible entries first so we can stop cleanly when the
+        // legend frame is full (inner `break` would only exit one layer).
+        const entries = [];
         for (const [layerId, visibleSet] of Object.entries(exportState.layers)) {
             const cfg = LAYERS[layerId];
             if (!cfg || !cfg.legendEntries) continue;
             for (let i = 0; i < cfg.legendEntries.length; i++) {
-                if (!visibleSet.has(i)) continue;
-                if (cy + rowH > el.y + el.h - 3) break;
-                const entry = cfg.legendEntries[i];
-                const sx = el.x + 3;
-                const sy = cy;
-
-                if (entry.style && entry.style.fillColor && entry.style.fillColor !== 'transparent') {
-                    const rgb = this._parseColor(entry.style.fillColor);
-                    doc.setFillColor(rgb[0], rgb[1], rgb[2]);
-                    doc.rect(sx, sy - swatchMm, swatchMm, swatchMm, 'F');
-                } else if (entry.style && entry.style.color) {
-                    const rgb = this._parseColor(entry.style.color);
-                    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
-                    doc.setLineWidth(entry.style.weight || 0.5);
-                    doc.line(sx, sy - swatchMm / 2, sx + swatchMm, sy - swatchMm / 2);
-                }
-                doc.setTextColor(0, 0, 0);
-                doc.text(entry.label || '', sx + swatchMm + 1.5, sy);
-                if (entry.labelGr) {
-                    doc.setTextColor(102, 102, 102);
-                    doc.setFontSize(rowFontPt * 0.85);
-                    doc.text(entry.labelGr, sx + swatchMm + 1.5, sy + rowH * 0.7);
-                    doc.setFontSize(rowFontPt);
-                }
-                cy += rowH * 1.2;
+                if (visibleSet.has(i)) entries.push(cfg.legendEntries[i]);
             }
+        }
+
+        for (const entry of entries) {
+            if (cy + rowH > el.y + el.h - 3) break;
+            const sx = el.x + 3;
+            const sy = cy;
+
+            if (entry.style && entry.style.fillColor && entry.style.fillColor !== 'transparent') {
+                const rgb = this._parseColor(entry.style.fillColor);
+                doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+                doc.rect(sx, sy - swatchMm, swatchMm, swatchMm, 'F');
+            } else if (entry.style && entry.style.color) {
+                const rgb = this._parseColor(entry.style.color);
+                doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+                doc.setLineWidth(entry.style.weight || 0.5);
+                doc.line(sx, sy - swatchMm / 2, sx + swatchMm, sy - swatchMm / 2);
+            }
+            doc.setTextColor(0, 0, 0);
+            doc.text(entry.label || '', sx + swatchMm + 1.5, sy);
+            if (entry.labelGr) {
+                doc.setTextColor(102, 102, 102);
+                doc.setFontSize(rowFontPt * 0.85);
+                doc.text(entry.labelGr, sx + swatchMm + 1.5, sy + rowH * 0.7);
+                doc.setFontSize(rowFontPt);
+            }
+            cy += rowH * 1.2;
         }
     }
 
@@ -465,14 +479,21 @@ export class ExportEngine {
             if (el.type === 'map') {
                 svg += `<image x="${el.x}" y="${el.y}" width="${el.w}" height="${el.h}" href="${mapDataUrl}"/>`;
             } else if (el.type === 'title' || el.type === 'subtitle' || el.type === 'date' || el.type === 'credits') {
+                // SVG viewBox is in mm (width="Wmm" height="Hmm" viewBox="0 0 W H").
+                // Font size is supplied in pt; convert to mm via 1 pt = 0.3528 mm
+                // so text renders at the intended physical size.
+                const PT_TO_MM = 0.3528;
+                const fontPt = el.fontSize || 12;
+                const fontMm = fontPt * PT_TO_MM;
                 const align = el.align === 'center' ? 'middle' :
                               el.align === 'right'  ? 'end' : 'start';
                 const tx = align === 'middle' ? el.x + el.w / 2 :
                            align === 'end'    ? el.x + el.w : el.x;
-                const fs = (el.fontSize || 12) * 0.35;
-                svg += `<text x="${tx}" y="${el.y + fs}" font-family="Inter, sans-serif" font-size="${fs}" font-weight="${el.fontWeight || 400}" text-anchor="${align}" fill="#000">${this._xmlEscape(el.text || '')}</text>`;
+                const baseline = el.y + fontMm * 0.8;
+                svg += `<text x="${tx}" y="${baseline}" font-family="Inter, sans-serif" font-size="${fontMm}" font-weight="${el.fontWeight || 400}" text-anchor="${align}" fill="#000">${this._xmlEscape(el.text || '')}</text>`;
                 if (el.textGr) {
-                    svg += `<text x="${tx}" y="${el.y + fs * 2.1}" font-family="Inter, sans-serif" font-size="${fs * 0.75}" font-weight="300" text-anchor="${align}" fill="#555">${this._xmlEscape(el.textGr)}</text>`;
+                    const fontMmGr = fontMm * 0.75;
+                    svg += `<text x="${tx}" y="${baseline + fontMm * 1.1}" font-family="Inter, sans-serif" font-size="${fontMmGr}" font-weight="300" text-anchor="${align}" fill="#555">${this._xmlEscape(el.textGr)}</text>`;
                 }
             }
             // legend, scalebar, north-arrow, logo omitted in SVG output (documented out-of-scope for this task)
