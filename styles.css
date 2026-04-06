@@ -98,20 +98,97 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
 }
 
 /* Legend Panel */
-.legend-group { margin-bottom: var(--spacing-sm); }
-.legend-group-toggle { display: flex; align-items: center; gap: var(--spacing-xs); width: 100%; padding: var(--spacing-sm); background: var(--background-secondary); border: none; cursor: pointer; font-size: 12px; font-weight: 600; text-align: left; border-radius: var(--radius-sm); }
-.legend-group-toggle:hover { background: #e8e8e8; }
-.legend-group-arrow { font-size: 10px; transition: transform 0.2s; display: inline-block; width: 12px; }
+/* ========================================================================
+   Right sidebar nesting hierarchy
+   ─────────────────────────────────────────────────────────────────────────
+   Three visually distinct levels:
+     L1  Project Info / Reference Maps / Legend     (top sections)
+     L2  Topography / Lithology / Coastal / ...     (environment subgroups
+                                                      inside the legend)
+     L3  Inselberg / Sand dune / Cave / ...         (legend rows)
+   ======================================================================== */
+
+/* ── Level 1: top-level collapsible sections ────────────────────────────── */
+.legend-group { margin-bottom: 10px; }
+.legend-group-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-align: left;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+}
+.legend-group-toggle:hover { background: #222; }
+.legend-group-arrow {
+    font-size: 9px;
+    transition: transform 0.2s;
+    display: inline-block;
+    width: 10px;
+    opacity: 0.7;
+}
 .legend-group-toggle[aria-expanded="true"] .legend-group-arrow { transform: rotate(90deg); }
 .legend-group-label { flex: 1; }
-.legend-group-label-gr { color: var(--text-secondary); font-weight: 400; font-size: 11px; }
-.legend-group-items { padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-md); }
+.legend-group-label-gr {
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: none;
+}
+.legend-group-items {
+    padding: 8px 0 4px 0;
+}
 .legend-group-items.collapsed { display: none; }
-/* Outer legend wrapper has no inner padding so subgroups align at the edge */
-.legend-outer-body { padding: var(--spacing-sm) 0 0 0; }
-.legend-outer-body .legend-subgroup { margin-bottom: var(--spacing-xs); }
-.legend-outer-body .legend-subgroup .legend-group-toggle { background: transparent; padding: var(--spacing-xs) var(--spacing-sm); font-weight: 500; font-size: 11px; }
-.legend-outer-body .legend-subgroup .legend-group-toggle:hover { background: var(--background-secondary); }
+
+/* ── Level 2: environment subgroups inside the Legend section ───────────── */
+.legend-outer-body {
+    padding: 6px 0 0 0;
+}
+.legend-outer-body .legend-subgroup {
+    margin: 0;
+    border-bottom: 1px solid var(--border-light);
+}
+.legend-outer-body .legend-subgroup:last-child { border-bottom: none; }
+.legend-outer-body .legend-subgroup .legend-group-toggle {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 8px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-radius: 0;
+    border-left: 2px solid var(--primary-color);
+    padding-left: 10px;
+}
+.legend-outer-body .legend-subgroup .legend-group-toggle:hover {
+    background: var(--background-secondary);
+    color: var(--text-primary);
+}
+.legend-outer-body .legend-subgroup .legend-group-arrow {
+    color: var(--text-secondary);
+    opacity: 1;
+}
+.legend-outer-body .legend-subgroup .legend-group-label-gr {
+    color: var(--text-secondary);
+    font-weight: 300;
+    font-size: 9px;
+    text-transform: none;
+    letter-spacing: 0.2px;
+}
+.legend-outer-body .legend-subgroup .legend-group-items {
+    padding: 4px 0 8px 14px;
+}
 .legend-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: 3px 0; font-size: 11px; }
 .legend-swatch { width: 24px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .legend-swatch img { width: 20px; height: 20px; object-fit: contain; }
