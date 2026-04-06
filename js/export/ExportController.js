@@ -20,6 +20,43 @@ export function _setLayersCache(layers) {
     _LAYERS_CACHE = layers;
 }
 
+/** Show a full-screen loading overlay with a spinner and message. */
+function showLoadingOverlay(message) {
+    hideLoadingOverlay();
+    const el = document.createElement('div');
+    el.id = 'export-loading-overlay';
+    el.className = 'export-loading-overlay';
+    const box = document.createElement('div');
+    box.className = 'export-loading-box';
+    const spinner = document.createElement('div');
+    spinner.className = 'export-loading-spinner';
+    box.appendChild(spinner);
+    const text = document.createElement('div');
+    text.className = 'export-loading-text';
+    text.textContent = message;
+    box.appendChild(text);
+    el.appendChild(box);
+    document.body.appendChild(el);
+}
+
+/** Remove the loading overlay if present. */
+function hideLoadingOverlay() {
+    const el = document.getElementById('export-loading-overlay');
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+/** Show a transient error toast near the bottom of the viewport. */
+function showErrorToast(message) {
+    const t = document.createElement('div');
+    t.className = 'export-error-toast';
+    t.textContent = message;
+    document.body.appendChild(t);
+    setTimeout(() => {
+        t.classList.add('fade-out');
+        setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 500);
+    }, 4000);
+}
+
 export class ExportController {
     /**
      * @param {EventBus}     eventBus
@@ -70,16 +107,38 @@ export class ExportController {
                 this.exportState = finalState;
                 this.exportState.status = 'rendering';
 
-                const renderer = await this._getPrintMapRenderer();
-                const canvas = await renderer.render(finalState);
+                showLoadingOverlay('Rendering map\u2026');
+                let canvas;
+                try {
+                    const renderer = await this._getPrintMapRenderer();
+                    canvas = await renderer.render(finalState);
+                } catch (renderErr) {
+                    hideLoadingOverlay();
+                    showErrorToast('Failed to render map: ' + renderErr.message);
+                    this.exportState.status = 'error';
+                    console.error(renderErr);
+                    return;
+                }
 
-                const { ExportEngine } = await import('./ExportEngine.js');
-                const engine = new ExportEngine();
-                await engine.export(finalState, canvas);
+                hideLoadingOverlay();
+                showLoadingOverlay('Generating ' + finalState.output.format.toUpperCase() + '\u2026');
+                try {
+                    const { ExportEngine } = await import('./ExportEngine.js');
+                    const engine = new ExportEngine();
+                    await engine.export(finalState, canvas);
+                } catch (engineErr) {
+                    showErrorToast('Export failed: ' + engineErr.message);
+                    this.exportState.status = 'error';
+                    console.error(engineErr);
+                    return;
+                } finally {
+                    hideLoadingOverlay();
+                }
 
                 this.exportState.status = 'done';
                 console.log('ExportController: export complete');
             } catch (designerErr) {
+                hideLoadingOverlay();
                 if (designerErr && designerErr.message === 'cancelled') {
                     this.exportState.status = 'idle';
                     console.log('ExportController: layout designer cancelled');
