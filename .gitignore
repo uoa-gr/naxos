@@ -2,8 +2,9 @@
 config.js
 
 # Data lives in Supabase Storage, not in git
-data/
-assets/
+# Root-level only — do NOT match js/data/ source code
+/data/
+/assets/
 
 # OS
 .DS_Store
