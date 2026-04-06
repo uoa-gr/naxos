@@ -841,3 +841,6 @@ const LAYER_CONFIG = {
 };
 
 export default LAYER_CONFIG;
+
+// Re-exports so consumers importing from LayerConfig still find these.
+export { PAGE_PRESETS, DPI_PRESETS, OUTPUT_FORMATS } from '../export/ExportState.js';
