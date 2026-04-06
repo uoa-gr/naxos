@@ -246,14 +246,14 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 18px;
+    gap: 20px;
+    margin: 4px 0 4px 0;
 }
 .welcome-content .welcome-logos img {
-    height: 28px;
+    height: 22px;
     width: auto;
     object-fit: contain;
-    opacity: 0.85;
+    opacity: 0.8;
 }
 
 .welcome-title {
@@ -294,33 +294,23 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     color: var(--text-secondary);
     margin-bottom: 8px;
 }
-/* SINGLE column so the citation order reads unambiguously top-to-bottom.
-   A 2-column grid makes it look like the order is wrong even when it isn't. */
+/* SINGLE column so the citation order reads unambiguously top-to-bottom. */
 .welcome-team {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    counter-reset: team-counter;
 }
 .welcome-team li {
-    display: grid;
-    grid-template-columns: 18px 1fr auto;
+    display: flex;
     align-items: baseline;
-    column-gap: 8px;
+    justify-content: space-between;
+    gap: 12px;
     padding: 4px 0;
     border-bottom: 1px dashed var(--border-light);
 }
 .welcome-team li:last-child { border-bottom: none; }
-.welcome-team li::before {
-    counter-increment: team-counter;
-    content: counter(team-counter) ".";
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-align: right;
-}
 .welcome-team-name {
     font-size: 11px;
     font-weight: 500;
