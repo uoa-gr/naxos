@@ -333,6 +333,7 @@ export class LayerManager {
         if (entry && entry.symbolIcon) {
             const baseSize = entry.symbolSize || 24;
             const size = this._getScaledIconSize(baseSize);
+            const belowMinZoom = entry.minZoom && this.map.getZoom() < entry.minZoom;
             const marker = L.marker(latlng, {
                 icon: L.icon({
                     iconUrl: assetUrl('symbols/' + entry.symbolIcon),
@@ -340,6 +341,8 @@ export class LayerManager {
                     iconAnchor: [size / 2, size / 2],
                 }),
                 pane: `layer-z${config.zIndex}`,
+                opacity: belowMinZoom ? 0 : 1,
+                interactive: !belowMinZoom,
             });
             // Store the legend entry reference for zoom-based rescaling
             marker._naxosEntry = entry;
@@ -400,6 +403,8 @@ export class LayerManager {
      * Skips landmarks (handled separately with font scaling).
      */
     _updateSymbolScales() {
+        const currentZoom = this.map.getZoom();
+
         for (const [layerId, leafletLayer] of this.layers) {
             const config = LAYERS[layerId];
             if (!config || config.geomType !== 'point' || layerId === 'landmarks') continue;
@@ -414,6 +419,13 @@ export class LayerManager {
                         iconSize: [size, size],
                         iconAnchor: [size / 2, size / 2],
                     }));
+
+                    // Per-entry minZoom: hide via opacity when zoomed out too far
+                    if (entry.minZoom) {
+                        const visible = currentZoom >= entry.minZoom;
+                        marker.setOpacity(visible ? 1 : 0);
+                        if (marker.options) marker.options.interactive = visible;
+                    }
                 }
             });
         }

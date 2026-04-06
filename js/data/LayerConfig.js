@@ -342,6 +342,7 @@ export const LAYERS = {
                 matchValues: ['Spring', 'Spring font'],
                 symbolIcon: 'spring.png',
                 symbolSize: 8,
+                minZoom: 14,
             },
             {
                 label: 'Cave',
@@ -661,6 +662,7 @@ export const LAYERS = {
                 matchValues: ['Man-made terraces', 'Man-made terrace'],
                 symbolIcon: 'man_made_terrace.png',
                 symbolSize: 7,
+                minZoom: 14,
             },
             {
                 label: 'Rainwater tank',
