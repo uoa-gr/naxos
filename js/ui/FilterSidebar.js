@@ -94,8 +94,10 @@ export class FilterSidebar {
         const section = document.createElement('div');
         section.className = 'layer-group-section';
 
-        // Header
-        const header = document.createElement('label');
+        // Header — must be a <div> (not <label>) so that clicking the
+        // text/chevron does NOT toggle the wrapped checkbox. The checkbox
+        // gets its own click; everything else expands/collapses the group.
+        const header = document.createElement('div');
         header.className = 'layer-group-header' + (group.expanded ? ' expanded' : '');
 
         const groupCb = document.createElement('input');
@@ -103,6 +105,9 @@ export class FilterSidebar {
         groupCb.className = 'group-checkbox';
         groupCb.dataset.group = group.id;
         groupCb.checked = true;
+        // Stop the click event from bubbling so the header's expand/collapse
+        // handler does not also fire when toggling the checkbox.
+        groupCb.addEventListener('click', (e) => e.stopPropagation());
 
         const labelSpan = document.createElement('span');
         labelSpan.className = 'group-label';
