@@ -140,8 +140,10 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     transition: background 0.15s;
 }
 .legend-group-toggle:hover { background: #eef0f2; }
-/* When the group is open, separate the header from the content with a hairline */
-.legend-group-toggle[aria-expanded="true"] {
+/* When a TOP-LEVEL group is open, separate the header from its content
+   with a hairline. Scoped to direct .legend-group children of the right
+   sidebar so it doesn't apply to L2 subgroups inside the legend. */
+#credits-panel > .legend-group > .legend-group-toggle[aria-expanded="true"] {
     border-bottom: 1px solid var(--border-light);
 }
 .legend-group-arrow {
@@ -166,33 +168,32 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
 .legend-group-items.collapsed { display: none; }
 
 /* ── Level 2: environment subgroups inside the Legend section ───────────── */
+/* No extra borders here — the L1 outline already wraps the whole legend.
+   Subgroups are differentiated by uppercase smaller text + indentation. */
 .legend-outer-body {
-    padding: 6px 0 0 0;
+    padding: 0;
+    margin: -8px -12px -10px -12px; /* cancel L1 inner padding so subgroups span edge-to-edge */
 }
 .legend-outer-body .legend-subgroup {
     margin: 0;
-    border-bottom: 1px solid var(--border-light);
+    border: none;
 }
-.legend-outer-body .legend-subgroup:last-child { border-bottom: none; }
 .legend-outer-body .legend-subgroup .legend-group-toggle {
     background: transparent;
     color: var(--text-primary);
-    padding: 8px 4px;
+    padding: 8px 12px;
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.6px;
+    border: none;
     border-radius: 0;
-    border-left: 2px solid var(--primary-color);
-    padding-left: 10px;
 }
 .legend-outer-body .legend-subgroup .legend-group-toggle:hover {
     background: var(--background-secondary);
-    color: var(--text-primary);
 }
 .legend-outer-body .legend-subgroup .legend-group-arrow {
     color: var(--text-secondary);
-    opacity: 1;
 }
 .legend-outer-body .legend-subgroup .legend-group-label-gr {
     color: var(--text-secondary);
@@ -202,7 +203,7 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     letter-spacing: 0.2px;
 }
 .legend-outer-body .legend-subgroup .legend-group-items {
-    padding: 4px 0 8px 14px;
+    padding: 2px 12px 8px 22px;
 }
 .legend-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: 3px 0; font-size: 11px; }
 .legend-swatch { width: 24px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
