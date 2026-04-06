@@ -175,6 +175,22 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     padding: 0;
     margin: 0;
 }
+.legend-title {
+    margin: 0 0 10px 0;
+    padding: 0 0 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.legend-title-gr {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
 .legend-section {
     margin: 0 0 10px 0;
 }

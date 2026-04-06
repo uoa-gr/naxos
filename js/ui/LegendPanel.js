@@ -133,6 +133,18 @@ export class LegendPanel {
         const root = document.createElement('div');
         root.className = 'legend-flat';
 
+        const title = document.createElement('h3');
+        title.className = 'legend-title';
+        const titleEn = document.createElement('span');
+        titleEn.className = 'legend-title-en';
+        titleEn.textContent = 'Legend';
+        const titleGr = document.createElement('span');
+        titleGr.className = 'legend-title-gr';
+        titleGr.textContent = '\u03A5\u03C0\u03CC\u03BC\u03BD\u03B7\u03BC\u03B1';
+        title.appendChild(titleEn);
+        title.appendChild(titleGr);
+        root.appendChild(title);
+
         for (const group of LAYER_GROUPS) {
             const entries = groupEntries[group.id];
             if (!entries || entries.length === 0) continue;
