@@ -341,7 +341,7 @@ export const LAYERS = {
                 matchField: 'DSC_En',
                 matchValues: ['Spring', 'Spring font'],
                 symbolIcon: 'spring.png',
-                symbolSize: 17,
+                symbolSize: 8,
             },
             {
                 label: 'Cave',
@@ -660,7 +660,7 @@ export const LAYERS = {
                 matchField: 'DSC_En',
                 matchValues: ['Man-made terraces', 'Man-made terrace'],
                 symbolIcon: 'man_made_terrace.png',
-                symbolSize: 16,
+                symbolSize: 7,
             },
             {
                 label: 'Rainwater tank',
