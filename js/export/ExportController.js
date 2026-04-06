@@ -70,7 +70,23 @@ export class ExportController {
                 this.exportState = finalState;
                 this.exportState.status = 'rendering';
                 console.log('ExportController: ready to render', finalState);
-                // TODO: render + export in Tasks 6, 7
+
+                // DEBUG (Task 6): render the map and preview it in a new tab
+                // Task 7 will replace this with ExportEngine + download.
+                const renderer = await this._getPrintMapRenderer();
+                const canvas = await renderer.render(finalState);
+                const dataUrl = canvas.toDataURL('image/png');
+                const win = window.open('', '_blank');
+                if (win) {
+                    win.document.title = 'PrintMapRenderer output';
+                    const body = win.document.body;
+                    body.style.cssText = 'margin:0;background:#222;display:flex;align-items:center;justify-content:center;min-height:100vh';
+                    const img = win.document.createElement('img');
+                    img.src = dataUrl;
+                    img.style.cssText = 'max-width:95vw;max-height:95vh;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.5)';
+                    body.appendChild(img);
+                }
+                console.log('ExportController: renderer produced canvas', canvas.width, 'x', canvas.height);
             } catch (designerErr) {
                 if (designerErr && designerErr.message === 'cancelled') {
                     this.exportState.status = 'idle';
@@ -89,6 +105,17 @@ export class ExportController {
                 console.error('ExportController: workflow error', err);
             }
         }
+    }
+
+    async _getPrintMapRenderer() {
+        if (!this._printMapRenderer) {
+            const { PrintMapRenderer } = await import('./PrintMapRenderer.js');
+            this._printMapRenderer = new PrintMapRenderer(
+                window.app.dataManager,
+                this.layerManager,
+            );
+        }
+        return this._printMapRenderer;
     }
 
     /**
