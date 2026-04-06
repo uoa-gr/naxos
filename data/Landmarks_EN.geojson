@@ -1,0 +1,26 @@
+{
+"type": "FeatureCollection",
+"name": "Landmarks_EN",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name_ENG": "Chora", "Name_GR": "Χώρα" }, "geometry": { "type": "Point", "coordinates": [ 25.375551706766224, 37.107787978896226 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Ag. Prokopios", "Name_GR": "Άγιος Προκόπιος" }, "geometry": { "type": "Point", "coordinates": [ 25.347241429684111, 37.07576164204125 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Ag. Anna", "Name_GR": "Αγία Άννα" }, "geometry": { "type": "Point", "coordinates": [ 25.356397230801555, 37.066934705936539 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Plaka", "Name_GR": "Πλάκα" }, "geometry": { "type": "Point", "coordinates": [ 25.365209837120318, 37.053898194306662 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Mikri Vigla", "Name_GR": "Μικρή Βίγλα" }, "geometry": { "type": "Point", "coordinates": [ 25.373997940272446, 37.020119562919938 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Glyfada beach", "Name_GR": "Γλυφάδα" }, "geometry": { "type": "Point", "coordinates": [ 25.390085553942651, 36.997454550438817 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Kastraki", "Name_GR": "Καστράκι" }, "geometry": { "type": "Point", "coordinates": [ 25.387078493156729, 37.007863782520204 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Pyrgaki", "Name_GR": "Πυργάκι" }, "geometry": { "type": "Point", "coordinates": [ 25.401728693896427, 36.976730056129284 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Ayiassos", "Name_GR": "Αγιασσός" }, "geometry": { "type": "Point", "coordinates": [ 25.425335774109232, 36.968998443227726 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Kalandos", "Name_GR": "Καλαντός" }, "geometry": { "type": "Point", "coordinates": [ 25.474995516133362, 36.936670935919324 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Panermos", "Name_GR": "Πάνερμος" }, "geometry": { "type": "Point", "coordinates": [ 25.539499309375586, 36.958790585842657 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Moutsouna", "Name_GR": "Μουτσούνα" }, "geometry": { "type": "Point", "coordinates": [ 25.586128602386907, 37.07925349189545 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Lionas", "Name_GR": "Λιώνας" }, "geometry": { "type": "Point", "coordinates": [ 25.585893843992114, 37.137944633687589 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Apollonas", "Name_GR": "Απόλλωνας" }, "geometry": { "type": "Point", "coordinates": [ 25.550681081564655, 37.181772424109397 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Filoti", "Name_GR": "Φιλώτι" }, "geometry": { "type": "Point", "coordinates": [ 25.498703204218863, 37.052480319650712 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Apeiranthos", "Name_GR": "Απείρανθος" }, "geometry": { "type": "Point", "coordinates": [ 25.519830438238827, 37.071062238195815 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Koronos", "Name_GR": "Κόρωνος" }, "geometry": { "type": "Point", "coordinates": [ 25.534422428241211, 37.116953599711621 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Chalki", "Name_GR": "Χαλκί (Τραγαία)" }, "geometry": { "type": "Point", "coordinates": [ 25.483151404039781, 37.06406544066602 ] } },
+{ "type": "Feature", "properties": { "Name_ENG": "Kynidaros", "Name_GR": "Κυνήδαρος" }, "geometry": { "type": "Point", "coordinates": [ 25.479886785919977, 37.101453608403496 ] } }
+]
+}
