@@ -26,6 +26,32 @@ const DEFAULT_STYLE = {
     fillOpacity: 0.3,
 };
 
+/**
+ * Approximate polygon area from its bounding box (in degree-units squared).
+ * Used only for sorting features so smaller polygons render on top of larger
+ * overlapping ones — true geodesic area not needed.
+ */
+function approxArea(geom) {
+    if (!geom) return 0;
+    let coordRings = [];
+    if (geom.type === 'Polygon') coordRings = geom.coordinates;
+    else if (geom.type === 'MultiPolygon') {
+        for (const poly of geom.coordinates) coordRings.push(...poly);
+    } else return 0;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const ring of coordRings) {
+        for (const [x, y] of ring) {
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+        }
+    }
+    if (!isFinite(minX)) return 0;
+    return (maxX - minX) * (maxY - minY);
+}
+
 export class LayerManager {
     /**
      * @param {L.Map}        map          - Leaflet map instance
@@ -50,6 +76,7 @@ export class LayerManager {
             this._handleZoomChange();
             this._updateSymbolScales();
             this._updateLandmarkScales();
+            this._updateEntryMinZoomVisibility();
         };
     }
 
@@ -77,8 +104,10 @@ export class LayerManager {
             console.warn(`LayerManager: ${failed} layer(s) failed to load`);
         }
 
-        // Apply initial zoom-based visibility (e.g. contours_50m)
+        // Apply initial zoom-based visibility (e.g. contours_50m + per-entry minZoom)
         this._handleZoomChange();
+        // Defer minZoom apply so polygon paths exist after the layers were added
+        setTimeout(() => this._updateEntryMinZoomVisibility(), 0);
 
         // Count features and update state
         this._updateFeatureCount();
@@ -110,6 +139,15 @@ export class LayerManager {
 
         const geojson = await this.dataManager.loadLayer(layerId);
         if (!geojson) return;
+
+        // For polygon layers, sort features by area descending so the smallest
+        // polygons render LAST and end up on top of larger ones (otherwise tiny
+        // outcrops like the single Neogene polygon get hidden behind big lithology areas).
+        if (config.geomType === 'polygon' && Array.isArray(geojson.features)) {
+            geojson.features = [...geojson.features].sort((a, b) =>
+                approxArea(b.geometry) - approxArea(a.geometry)
+            );
+        }
 
         const paneName = `layer-z${config.zIndex}`;
         let leafletLayer;
@@ -501,6 +539,35 @@ export class LayerManager {
                         marker.setOpacity(visible ? 1 : 0);
                         if (marker.options) marker.options.interactive = visible;
                     }
+                }
+            });
+        }
+    }
+
+    /**
+     * Apply per-entry minZoom visibility across all loaded layers.
+     * Hides features whose matching legend entry has a minZoom > current map zoom.
+     * Works for polygons, lines, and any feature with a `_path` element.
+     * Point markers are handled separately by `_updateSymbolScales()`.
+     */
+    _updateEntryMinZoomVisibility() {
+        const currentZoom = this.map.getZoom();
+        for (const [layerId, leafletLayer] of this.layers) {
+            const config = LAYERS[layerId];
+            if (!config || config.geomType === 'point' || layerId === 'landmarks') continue;
+
+            leafletLayer.eachLayer(featureLayer => {
+                const feature = featureLayer.feature;
+                if (!feature) return;
+                const entry = this._findMatchingEntry(config, feature);
+                if (!entry || !entry.minZoom) return;
+
+                // Don't override an explicit toggle-off
+                if (featureLayer._naxosHidden) return;
+
+                const visible = currentZoom >= entry.minZoom;
+                if (featureLayer._path) {
+                    featureLayer._path.style.display = visible ? '' : 'none';
                 }
             });
         }

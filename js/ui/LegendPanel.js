@@ -268,26 +268,9 @@ export class LegendPanel {
         const projTitleGr = document.createElement('div');
         projTitleGr.className = 'project-card-title-gr';
         projTitleGr.textContent = '\u0393\u03B5\u03C9\u03BC\u03BF\u03C1\u03C6\u03BF\u03BB\u03BF\u03B3\u03B9\u03BA\u03CC\u03C2 \u03A7\u03AC\u03C1\u03C4\u03B7\u03C2 \u0395\u03BB\u03BB\u03AC\u03B4\u03BF\u03C2';
-        const projSheet = document.createElement('div');
-        projSheet.className = 'project-card-sheet';
-        projSheet.textContent = 'Naxos Sheet \u00B7 \u03A6\u03CD\u03BB\u03BB\u03BF \u039D\u03AC\u03BE\u03BF\u03C5 \u00B7 1:50,000';
         titleCard.appendChild(projTitle);
         titleCard.appendChild(projTitleGr);
-        titleCard.appendChild(projSheet);
         section.appendChild(titleCard);
-
-        // --- Description ---
-        const descCard = document.createElement('div');
-        descCard.className = 'project-card';
-        const descLabel = document.createElement('div');
-        descLabel.className = 'project-card-label';
-        descLabel.textContent = 'Project \u00B7 \u0388\u03C1\u03B3\u03BF';
-        const descText = document.createElement('div');
-        descText.className = 'project-card-body';
-        descText.textContent = 'Contribution to the production of the Geomorphological Map of Greece at a scale of 1:1,000,000 and to the pilot large-scale geomorphological mapping of the Naxos sheet.';
-        descCard.appendChild(descLabel);
-        descCard.appendChild(descText);
-        section.appendChild(descCard);
 
         // --- Institutions ---
         const instCard = document.createElement('div');

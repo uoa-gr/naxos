@@ -148,6 +148,7 @@ export const LAYERS = {
                 symbolIcon: 'rocky_coast_pattern.png',
                 lineWidth: 2,
                 style: { color: '#000', weight: 2 },
+                minZoom: 13,
             },
         ],
     },
@@ -317,6 +318,7 @@ export const LAYERS = {
                 labelGr: 'Καταρράκτης',
                 symbolIcon: 'waterfall.png',
                 symbolSize: 10,
+                minZoom: 13,
             },
         ],
     },
@@ -351,6 +353,7 @@ export const LAYERS = {
                 matchValues: ['Cave'],
                 symbolIcon: 'cave.png',
                 symbolSize: 30,
+                minZoom: 14,
             },
             {
                 label: 'Cave shelter',
@@ -359,6 +362,7 @@ export const LAYERS = {
                 matchValues: ['Cave shelter'],
                 symbolIcon: 'cave_fill.png',
                 symbolSize: 30,
+                minZoom: 14,
             },
         ],
     },
@@ -434,6 +438,7 @@ export const LAYERS = {
                 matchValues: ['Notch', 'Double Notch', 'Tidal notch'],
                 symbolIcon: 'tidal_notch.png',
                 symbolSize: 19,
+                minZoom: 14,
             },
             {
                 label: 'Coastal cave',
@@ -442,6 +447,7 @@ export const LAYERS = {
                 matchValues: ['Coastal cave'],
                 symbolIcon: 'cave.png',
                 symbolSize: 24,
+                minZoom: 14,
             },
             {
                 label: 'Marmite',
@@ -450,6 +456,7 @@ export const LAYERS = {
                 matchValues: ['Marmite'],
                 symbolIcon: 'marmite.png',
                 symbolSize: 8,
+                minZoom: 14,
             },
             {
                 label: 'Sea arch',
@@ -458,6 +465,7 @@ export const LAYERS = {
                 matchValues: ['Sea Arch', 'Sea arch'],
                 symbolIcon: 'sea_arch.png',
                 symbolSize: 19,
+                minZoom: 13,
             },
             {
                 label: 'Sea stack',
@@ -466,6 +474,7 @@ export const LAYERS = {
                 matchValues: ['Stack', 'Sea stack'],
                 symbolIcon: 'sea_stack.png',
                 symbolSize: 12,
+                minZoom: 13,
             },
             {
                 label: 'Stump',
@@ -474,6 +483,7 @@ export const LAYERS = {
                 matchValues: ['Stump'],
                 symbolIcon: 'stump.png',
                 symbolSize: 8,
+                minZoom: 14,
             },
         ],
     },
@@ -578,6 +588,7 @@ export const LAYERS = {
                 labelGr: 'Βράχος μορφής μανιταριού',
                 symbolIcon: 'mushroom_rock.png',
                 symbolSize: 19,
+                minZoom: 14,
             },
         ],
     },
@@ -671,6 +682,7 @@ export const LAYERS = {
                 matchValues: ['Rainwater tank'],
                 symbolIcon: 'rainwater_tank.png',
                 symbolSize: 7,
+                minZoom: 14,
             },
             {
                 label: 'Mine',
@@ -695,6 +707,7 @@ export const LAYERS = {
                 matchValues: ['Ancient quarry'],
                 symbolIcon: 'quarry.png',
                 symbolSize: 18,
+                minZoom: 14,
             },
         ],
     },
@@ -725,24 +738,6 @@ export const LAYERS = {
     // ===================================================================
     //  Utility / base layers (not shown in legend groups)
     // ===================================================================
-
-    perimeter: {
-        id: 'perimeter',
-        file: 'Perimeter_Naxos20210226.geojson',
-        group: null,
-        label: 'Perimeter',
-        labelGr: 'Περίμετρος',
-        geomType: 'polygon',
-        visible: true,
-        zIndex: 2,
-        legendEntries: [
-            {
-                label: 'Perimeter',
-                labelGr: 'Περίμετρος',
-                style: { color: '#0100cc', weight: 1, fillColor: 'transparent', fillOpacity: 0 },
-            },
-        ],
-    },
 
     coastline: {
         id: 'coastline',

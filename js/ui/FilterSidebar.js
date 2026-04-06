@@ -48,6 +48,8 @@ export class FilterSidebar {
                 label: entry.label || layer.label,
                 labelGr: entry.labelGr || layer.labelGr,
                 geomType: layer.geomType,
+                // Effective minZoom: entry-level overrides layer-level
+                minZoom: entry.minZoom || layer.minZoom || null,
             }));
             if (targetId === 'base') {
                 baseItems.push(...items);
@@ -122,6 +124,7 @@ export class FilterSidebar {
         for (const item of items) {
             const toggle = document.createElement('label');
             toggle.className = 'layer-toggle';
+            if (item.minZoom) toggle.classList.add('has-min-zoom');
 
             const cb = document.createElement('input');
             cb.type = 'checkbox';
@@ -142,6 +145,15 @@ export class FilterSidebar {
                 grSpan.className = 'layer-name-gr';
                 grSpan.textContent = item.labelGr;
                 toggle.appendChild(grSpan);
+            }
+
+            // Scale-dependent indicator: small "zoom" hint when feature only shows at higher zoom
+            if (item.minZoom) {
+                const hint = document.createElement('span');
+                hint.className = 'layer-minzoom-hint';
+                hint.textContent = '\u2316 z\u2265' + item.minZoom;
+                hint.title = 'Visible at zoom level ' + item.minZoom + ' and above';
+                toggle.appendChild(hint);
             }
 
             itemsDiv.appendChild(toggle);
