@@ -32,35 +32,59 @@ export class FilterSidebar {
     _renderLayerControls() {
         const container = document.getElementById('layer-controls');
         if (!container) return;
-
-        // Clear existing content
         container.textContent = '';
 
-        // Base layers (group === null)
-        const baseLayers = Object.values(LAYERS).filter(l => l.group === null);
-        if (baseLayers.length) {
+        // Build mapping: groupId -> array of {layerId, entryIndex, label, labelGr}
+        // Mirrors the legend structure exactly so the user sees the same items here.
+        const groupItems = {};
+        for (const group of LAYER_GROUPS) groupItems[group.id] = [];
+        const baseItems = [];
+
+        for (const layer of Object.values(LAYERS)) {
+            const targetId = layer.group || 'base';
+            const items = layer.legendEntries.map((entry, idx) => ({
+                layerId: layer.id,
+                entryIndex: idx,
+                label: entry.label || layer.label,
+                labelGr: entry.labelGr || layer.labelGr,
+                geomType: layer.geomType,
+            }));
+            if (targetId === 'base') {
+                baseItems.push(...items);
+            } else if (groupItems[targetId]) {
+                groupItems[targetId].push(...items);
+            } else {
+                // Layer's group is unknown — fold into 'general'
+                if (!groupItems['general']) groupItems['general'] = [];
+                groupItems['general'].push(...items);
+            }
+        }
+
+        // Base layers section
+        if (baseItems.length) {
             container.appendChild(this._buildGroupSection({
                 id: 'base',
                 label: 'Base layers',
-                labelGr: 'Βασικά επίπεδα',
-                expanded: true,
-            }, baseLayers));
+                labelGr: '\u0392\u03B1\u03C3\u03B9\u03BA\u03AC \u03B5\u03C0\u03AF\u03C0\u03B5\u03B4\u03B1',
+                expanded: false,
+            }, baseItems));
         }
 
-        // Grouped layers
+        // Environment groups
         for (const group of LAYER_GROUPS) {
-            const layers = Object.values(LAYERS).filter(l => l.group === group.id);
-            if (layers.length) {
-                container.appendChild(this._buildGroupSection(group, layers));
+            const items = groupItems[group.id];
+            if (items && items.length) {
+                container.appendChild(this._buildGroupSection(group, items));
             }
         }
     }
 
     /**
-     * Build a group section DOM element using safe DOM methods.
-     * @returns {HTMLElement}
+     * Build a group section with one toggle per legend entry (item).
+     * @param {object} group   - { id, label, labelGr, expanded }
+     * @param {Array}  items   - [{ layerId, entryIndex, label, labelGr }]
      */
-    _buildGroupSection(group, layers) {
+    _buildGroupSection(group, items) {
         const section = document.createElement('div');
         section.className = 'layer-group-section';
 
@@ -72,7 +96,7 @@ export class FilterSidebar {
         groupCb.type = 'checkbox';
         groupCb.className = 'group-checkbox';
         groupCb.dataset.group = group.id;
-        groupCb.checked = layers.every(l => l.visible);
+        groupCb.checked = true;
 
         const labelSpan = document.createElement('span');
         labelSpan.className = 'group-label';
@@ -91,39 +115,40 @@ export class FilterSidebar {
         header.appendChild(labelGrSpan);
         header.appendChild(chevron);
 
-        // Layers container
-        const layersDiv = document.createElement('div');
-        layersDiv.className = 'layer-group-layers' + (group.expanded ? '' : ' collapsed');
+        // Items container
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'layer-group-layers' + (group.expanded ? '' : ' collapsed');
 
-        for (const layer of layers) {
+        for (const item of items) {
             const toggle = document.createElement('label');
             toggle.className = 'layer-toggle';
 
             const cb = document.createElement('input');
             cb.type = 'checkbox';
-            cb.className = 'layer-checkbox';
-            cb.dataset.layer = layer.id;
-            cb.checked = layer.visible;
+            cb.className = 'entry-checkbox';
+            cb.dataset.layer = item.layerId;
+            cb.dataset.entryIndex = String(item.entryIndex);
+            cb.checked = true;
 
             const nameSpan = document.createElement('span');
             nameSpan.className = 'layer-name';
-            nameSpan.textContent = layer.label;
+            nameSpan.textContent = item.label;
 
             toggle.appendChild(cb);
             toggle.appendChild(nameSpan);
 
-            if (layer.labelGr) {
+            if (item.labelGr && item.labelGr !== item.label) {
                 const grSpan = document.createElement('span');
                 grSpan.className = 'layer-name-gr';
-                grSpan.textContent = layer.labelGr;
+                grSpan.textContent = item.labelGr;
                 toggle.appendChild(grSpan);
             }
 
-            layersDiv.appendChild(toggle);
+            itemsDiv.appendChild(toggle);
         }
 
         section.appendChild(header);
-        section.appendChild(layersDiv);
+        section.appendChild(itemsDiv);
         return section;
     }
 
@@ -163,41 +188,30 @@ export class FilterSidebar {
     _bindEvents() {
         const container = document.getElementById('layer-controls');
         if (container) {
-            // Group checkbox — toggle all layers in the group
             container.addEventListener('change', (e) => {
+                // Group checkbox — toggle all entries in this section
                 const groupCb = e.target.closest('.group-checkbox');
                 if (groupCb) {
-                    const groupId = groupCb.dataset.group;
                     const visible = groupCb.checked;
-
-                    // For base layers (group === null), toggle individually
-                    if (groupId === 'base') {
-                        const baseLayers = Object.values(LAYERS).filter(l => l.group === null);
-                        for (const l of baseLayers) {
-                            this.layerManager.toggleLayer(l.id, visible);
-                        }
-                    } else {
-                        this.layerManager.toggleGroup(groupId, visible);
-                    }
-
-                    // Update individual checkboxes in the section
                     const section = groupCb.closest('.layer-group-section');
                     if (section) {
-                        section.querySelectorAll('.layer-checkbox').forEach(cb => {
+                        section.querySelectorAll('.entry-checkbox').forEach(cb => {
                             cb.checked = visible;
+                            const layerId = cb.dataset.layer;
+                            const entryIndex = parseInt(cb.dataset.entryIndex, 10);
+                            this.layerManager.toggleEntry(layerId, entryIndex, visible);
                         });
                     }
                     return;
                 }
 
-                // Individual layer checkbox
-                const layerCb = e.target.closest('.layer-checkbox');
-                if (layerCb) {
-                    const layerId = layerCb.dataset.layer;
-                    this.layerManager.toggleLayer(layerId, layerCb.checked);
-
-                    // Update group checkbox state (checked if all layers checked)
-                    this._syncGroupCheckbox(layerCb);
+                // Entry checkbox — toggle a single legend class
+                const entryCb = e.target.closest('.entry-checkbox');
+                if (entryCb) {
+                    const layerId = entryCb.dataset.layer;
+                    const entryIndex = parseInt(entryCb.dataset.entryIndex, 10);
+                    this.layerManager.toggleEntry(layerId, entryIndex, entryCb.checked);
+                    this._syncGroupCheckbox(entryCb);
                 }
             });
 
@@ -228,15 +242,15 @@ export class FilterSidebar {
     }
 
     /**
-     * Synchronize the group checkbox after an individual layer toggle.
+     * Synchronize the group checkbox state based on its child entry checkboxes.
      */
-    _syncGroupCheckbox(layerCb) {
-        const section = layerCb.closest('.layer-group-section');
+    _syncGroupCheckbox(entryCb) {
+        const section = entryCb.closest('.layer-group-section');
         if (!section) return;
         const groupCb = section.querySelector('.group-checkbox');
         if (!groupCb) return;
 
-        const allCheckboxes = section.querySelectorAll('.layer-checkbox');
+        const allCheckboxes = section.querySelectorAll('.entry-checkbox');
         const allChecked = [...allCheckboxes].every(cb => cb.checked);
         groupCb.checked = allChecked;
     }

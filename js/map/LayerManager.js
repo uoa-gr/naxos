@@ -252,6 +252,65 @@ export class LayerManager {
     }
 
     /**
+     * Toggle visibility of features within a layer that match a specific
+     * legend entry (by index). Tracks hidden entries in `_hiddenEntries`.
+     */
+    toggleEntry(layerId, entryIndex, visible) {
+        if (!this._hiddenEntries) this._hiddenEntries = new Map();
+        let hidden = this._hiddenEntries.get(layerId);
+        if (!hidden) {
+            hidden = new Set();
+            this._hiddenEntries.set(layerId, hidden);
+        }
+        if (visible) {
+            hidden.delete(entryIndex);
+        } else {
+            hidden.add(entryIndex);
+        }
+
+        // Re-apply visibility on every feature in this layer
+        const config = LAYERS[layerId];
+        const leafletLayer = this.layers.get(layerId);
+        if (!config || !leafletLayer) return;
+
+        leafletLayer.eachLayer(featureLayer => {
+            const feature = featureLayer.feature;
+            if (!feature) return;
+            const idx = this._getEntryIndex(config, feature);
+            const isHidden = idx !== -1 && hidden.has(idx);
+            this._setFeatureVisible(featureLayer, !isHidden);
+        });
+
+        this._updateFeatureCount();
+        this.eventBus.emit('entry:toggled', { layerId, entryIndex, visible });
+    }
+
+    /** Find the index of the matching legend entry for a feature, or -1 */
+    _getEntryIndex(config, feature) {
+        if (!config.legendEntries) return -1;
+        for (let i = 0; i < config.legendEntries.length; i++) {
+            if (this._featureMatchesEntry(feature, config.legendEntries[i])) return i;
+        }
+        if (config.legendEntries.length === 1 && !config.legendEntries[0].matchField) return 0;
+        return -1;
+    }
+
+    /** Hide or show a single feature instance (works for paths and markers) */
+    _setFeatureVisible(featureLayer, visible) {
+        // Path-based features (polygons, lines)
+        if (featureLayer._path) {
+            featureLayer._path.style.display = visible ? '' : 'none';
+        }
+        // Marker-based features
+        if (typeof featureLayer.setOpacity === 'function') {
+            featureLayer.setOpacity(visible ? 1 : 0);
+            if (featureLayer.options) featureLayer.options.interactive = visible;
+        }
+        // Track on the feature itself for re-render after style changes
+        featureLayer._naxosHidden = !visible;
+    }
+
+    /**
      * Get the L.GeoJSON layer instance for a given layer id.
      * @param {string} layerId
      * @returns {L.GeoJSON|undefined}
@@ -274,19 +333,30 @@ export class LayerManager {
         const config = LAYERS[layerId];
         if (!config || !config.legendEntries) return DEFAULT_STYLE;
 
-        for (const entry of config.legendEntries) {
-            if (this._featureMatchesEntry(feature, entry)) {
-                return { ...entry.style };
+        let entry = null;
+        for (const e of config.legendEntries) {
+            if (this._featureMatchesEntry(feature, e)) {
+                entry = e;
+                break;
             }
         }
+        // Single-class fallback
+        if (!entry && config.legendEntries.length === 1 && !config.legendEntries[0].matchField) {
+            entry = config.legendEntries[0];
+        }
+        if (!entry) return DEFAULT_STYLE;
 
-        // No legend entry matched — if this layer has only one entry without matchField,
-        // use that entry's style (e.g. contours, faults, perimeter)
-        if (config.legendEntries.length === 1 && !config.legendEntries[0].matchField) {
-            return { ...config.legendEntries[0].style };
+        const style = { ...entry.style };
+
+        // For polygons with patternType/patternIcon, ensure a visible outline so the
+        // polygon area can be identified even if the pattern fill is sparse.
+        if ((entry.patternType || entry.patternIcon) && config.geomType === 'polygon') {
+            if (!style.color || style.color === 'transparent') style.color = '#444';
+            if (!style.weight || style.weight < 0.6) style.weight = 0.8;
+            if (style.opacity === undefined) style.opacity = 0.7;
         }
 
-        return DEFAULT_STYLE;
+        return style;
     }
 
     /**
@@ -308,12 +378,17 @@ export class LayerManager {
         } else if (entry.patternIcon) {
             patternId = PATTERN_ICON_TO_ID[entry.patternIcon] || null;
         }
-        if (!patternId) return;
 
         const path = featureLayer._path;
         if (path) {
-            path.setAttribute('fill', `url(#${patternId})`);
-            path.setAttribute('fill-opacity', '1');
+            if (patternId) {
+                path.setAttribute('fill', `url(#${patternId})`);
+                path.setAttribute('fill-opacity', '1');
+            }
+            // Re-apply hidden state if previously toggled off
+            if (featureLayer._naxosHidden) {
+                path.style.display = 'none';
+            }
         }
     }
 
