@@ -452,7 +452,7 @@ export class LayerManager {
         if (entry && entry.symbolIcon) {
             const baseSize = entry.symbolSize || 24;
             const size = this._getScaledIconSize(baseSize);
-            const entryIndex = this._findEntryIndex(config, feature);
+            const entryIndex = this._getEntryIndex(config, feature);
             const rule = this._getRuleFor(layerId, entryIndex, entry);
             const visible = ScaleRulesStore.isVisibleAtZoom(rule, this.map.getZoom());
             const marker = L.marker(latlng, {
@@ -577,7 +577,7 @@ export class LayerManager {
                 const feature = featureLayer.feature;
                 if (!feature) return;
                 const entry = this._findMatchingEntry(config, feature);
-                const entryIndex = this._findEntryIndex(config, feature);
+                const entryIndex = this._getEntryIndex(config, feature);
                 const rule = this._getRuleFor(layerId, entryIndex, entry);
 
                 // Don't override an explicit toggle-off
