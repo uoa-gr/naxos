@@ -51,12 +51,22 @@
 
         <!-- Header -->
         <header class="header">
-            <button id="left-sidebar-toggle" class="header-toggle-btn" aria-label="Filters">&#9776;</button>
+            <div class="header-left">
+                <button id="left-sidebar-toggle" class="header-toggle-btn" aria-label="Filters">&#9776;</button>
+                <a href="https://en.uoa.gr/" target="_blank" rel="noopener" class="header-logo header-logo-left" title="National and Kapodistrian University of Athens">
+                    <img src="https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/images/nkua_logo_en.jpg" alt="NKUA" />
+                </a>
+            </div>
             <div class="header-title">
                 <h1>Geomorphological Map &#8212; Naxos</h1>
                 <p class="subtitle">&#915;&#949;&#969;&#956;&#959;&#961;&#966;&#959;&#955;&#959;&#947;&#953;&#954;&#972;&#962; &#935;&#940;&#961;&#964;&#951;&#962; &#8212; &#925;&#940;&#958;&#959;&#962;</p>
             </div>
-            <button id="right-sidebar-toggle" class="header-toggle-btn" aria-label="Info">&#8505;</button>
+            <div class="header-right">
+                <a href="https://www.eagme.gr/" target="_blank" rel="noopener" class="header-logo header-logo-right" title="Hellenic Survey of Geology &amp; Mineral Exploration">
+                    <img src="https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/images/eagme_logo_en.png" alt="EAGME" />
+                </a>
+                <button id="right-sidebar-toggle" class="header-toggle-btn" aria-label="Info">&#8505;</button>
+            </div>
         </header>
 
         <!-- Mobile Controls -->
@@ -87,14 +97,12 @@
                 </div>
             </main>
 
-            <!-- Right Sidebar: Title, insets, credits (top) + Legend (below) -->
+            <!-- Right Sidebar: Project Info / Reference Maps / Legend (each collapsible) -->
             <aside class="sidebar sidebar-right" id="sidebar-right">
                 <button class="sidebar-close" id="sidebar-right-close">&times;</button>
                 <div class="sidebar-content">
                     <div id="credits-panel"></div>
-                    <h2 class="sidebar-title">Legend &#8212; &#933;&#960;&#972;&#956;&#957;&#951;&#956;&#945;</h2>
                     <div id="legend-panel"></div>
-                    <div id="info-panel"></div>
                 </div>
             </aside>
         </div>

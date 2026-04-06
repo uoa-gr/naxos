@@ -111,6 +111,14 @@ export class FilterSidebar {
 
             toggle.appendChild(cb);
             toggle.appendChild(nameSpan);
+
+            if (layer.labelGr) {
+                const grSpan = document.createElement('span');
+                grSpan.className = 'layer-name-gr';
+                grSpan.textContent = layer.labelGr;
+                toggle.appendChild(grSpan);
+            }
+
             layersDiv.appendChild(toggle);
         }
 

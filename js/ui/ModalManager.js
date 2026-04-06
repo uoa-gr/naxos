@@ -71,6 +71,14 @@ export class ModalManager {
         const titleText = props.DSC_En || props.Name_Eng || props.NAME || props.Name_ENG || layerLabel;
         const subtitleText = props.DSC_Gr || props.Name_GR || layerLabelGr;
 
+        // Layer chip — small uppercase tag at the top showing which layer the feature belongs to
+        if (layerConfig) {
+            const chip = document.createElement('div');
+            chip.className = 'feature-detail-layer-chip';
+            chip.textContent = layerLabel + (layerLabelGr ? '  \u00B7  ' + layerLabelGr : '');
+            detailsEl.appendChild(chip);
+        }
+
         // Title
         const title = document.createElement('h3');
         title.className = 'feature-detail-title';
