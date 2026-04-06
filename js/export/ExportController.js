@@ -55,8 +55,24 @@ export class ExportController {
         this.exportState.layers = this._snapshotVisibleLayers();
         this.exportState.status = 'selecting-area';
 
-        console.log('ExportController: workflow opened', this.exportState);
-        // TODO: open Step-1 modal (AreaSelector) - wired in Task 3
+        const { AreaSelector } = await import('./AreaSelector.js');
+        const selector = new AreaSelector(this.mapManager.getMap());
+
+        try {
+            const area = await selector.open();
+            this.exportState.area = area;
+            this.exportState.status = 'designing';
+            console.log('ExportController: area selected', area);
+            // TODO: open Step-2 modal (LayoutDesigner) in Task 5
+        } catch (err) {
+            if (err && err.message === 'cancelled') {
+                this.exportState.status = 'idle';
+                console.log('ExportController: workflow cancelled by user');
+            } else {
+                this.exportState.status = 'error';
+                console.error('ExportController: workflow error', err);
+            }
+        }
     }
 
     /**
