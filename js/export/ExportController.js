@@ -63,7 +63,23 @@ export class ExportController {
             this.exportState.area = area;
             this.exportState.status = 'designing';
             console.log('ExportController: area selected', area);
-            // TODO: open Step-2 modal (LayoutDesigner) in Task 5
+            const { LayoutDesigner } = await import('./LayoutDesigner.js');
+            const designer = new LayoutDesigner(this.exportState, this.layerManager);
+            try {
+                const finalState = await designer.open();
+                this.exportState = finalState;
+                this.exportState.status = 'rendering';
+                console.log('ExportController: ready to render', finalState);
+                // TODO: render + export in Tasks 6, 7
+            } catch (designerErr) {
+                if (designerErr && designerErr.message === 'cancelled') {
+                    this.exportState.status = 'idle';
+                    console.log('ExportController: layout designer cancelled');
+                } else {
+                    this.exportState.status = 'error';
+                    console.error('ExportController: designer error', designerErr);
+                }
+            }
         } catch (err) {
             if (err && err.message === 'cancelled') {
                 this.exportState.status = 'idle';
