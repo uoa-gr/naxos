@@ -544,3 +544,33 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     cursor: nwse-resize;
     z-index: 2;
 }
+
+/* ========================================================================
+   Layout Designer — mobile responsive (<= 768px)
+   ======================================================================== */
+@media (max-width: 768px) {
+    .export-designer-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto auto;
+    }
+    .export-designer-left,
+    .export-designer-right {
+        border: none;
+        border-top: 1px solid var(--border-light);
+        max-height: 40vh;
+    }
+    .export-designer-center { order: 1; padding: var(--spacing-sm); }
+    .export-designer-right  { order: 2; }
+    .export-designer-left   { order: 3; }
+    .export-designer-topbar { flex-wrap: wrap; }
+    .export-designer-topbar .btn {
+        flex: 1 1 auto;
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    .export-designer-title {
+        flex: 1 1 100%;
+        order: -1;
+        padding: 4px 0;
+    }
+}
