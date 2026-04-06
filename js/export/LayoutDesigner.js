@@ -11,6 +11,7 @@ import {
     OUTPUT_FORMATS,
     applyOrientation,
     resetElementPositions,
+    defaultElementPositions,
     buildFilename,
 } from './ExportState.js';
 import { assetUrl } from '../data/DataManager.js';
@@ -33,6 +34,10 @@ export class LayoutDesigner {
             this.resolve = resolve;
             this.reject = reject;
             this._render();
+            this._escHandler = (e) => {
+                if (e.key === 'Escape') this._cancel();
+            };
+            document.addEventListener('keydown', this._escHandler);
         });
     }
 
@@ -268,8 +273,17 @@ export class LayoutDesigner {
         resetBtn.className = 'btn btn-secondary';
         resetBtn.textContent = 'Reset';
         resetBtn.addEventListener('click', () => {
+            // Reset ONLY the currently selected element back to its default
+            // position/size for the current page. Other elements are untouched.
+            const defaults = defaultElementPositions(this.exportState.page);
+            const d = defaults[el.id];
+            if (d) {
+                el.x = d.x;
+                el.y = d.y;
+                el.w = d.w;
+                el.h = d.h;
+            }
             el._customized = false;
-            resetElementPositions(this.exportState, false);
             this._renderPreview();
             this._renderLeftPanel();
         });
@@ -557,5 +571,9 @@ export class LayoutDesigner {
             this.modal.parentNode.removeChild(this.modal);
         }
         this.modal = null;
+        if (this._escHandler) {
+            document.removeEventListener('keydown', this._escHandler);
+            this._escHandler = null;
+        }
     }
 }
