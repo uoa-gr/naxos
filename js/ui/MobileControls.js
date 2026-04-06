@@ -15,14 +15,16 @@ export class MobileControls {
 
         const isMobile = () => window.innerWidth <= 768;
 
+        const refreshMap = () => setTimeout(() => mapInstance()?.invalidateSize(), 320);
+
         const toggleLeft = () => {
             if (isMobile()) {
                 rightSidebar.classList.remove('active');
                 leftSidebar.classList.toggle('active');
+                refreshMap();
             } else {
                 mainContent.classList.toggle('left-collapsed');
-                // Tell Leaflet the container size changed
-                setTimeout(() => mapInstance()?.invalidateSize(), 260);
+                refreshMap();
             }
         };
 
@@ -30,9 +32,10 @@ export class MobileControls {
             if (isMobile()) {
                 leftSidebar.classList.remove('active');
                 rightSidebar.classList.toggle('active');
+                refreshMap();
             } else {
                 mainContent.classList.toggle('right-collapsed');
-                setTimeout(() => mapInstance()?.invalidateSize(), 260);
+                refreshMap();
             }
         };
 
@@ -51,16 +54,22 @@ export class MobileControls {
         document.getElementById('mobile-filters-toggle')?.addEventListener('click', toggleLeft);
         document.getElementById('mobile-info-toggle')?.addEventListener('click', toggleRight);
 
-        // In-sidebar close buttons (mobile only — desktop uses header buttons)
+        // In-sidebar close buttons (visible on both mobile and desktop)
         document.getElementById('sidebar-left-close')?.addEventListener('click', () => {
-            leftSidebar.classList.remove('active');
-            mainContent.classList.add('left-collapsed');
-            setTimeout(() => mapInstance()?.invalidateSize(), 260);
+            if (isMobile()) {
+                leftSidebar.classList.remove('active');
+            } else {
+                mainContent.classList.add('left-collapsed');
+                setTimeout(() => mapInstance()?.invalidateSize(), 260);
+            }
         });
         document.getElementById('sidebar-right-close')?.addEventListener('click', () => {
-            rightSidebar.classList.remove('active');
-            mainContent.classList.add('right-collapsed');
-            setTimeout(() => mapInstance()?.invalidateSize(), 260);
+            if (isMobile()) {
+                rightSidebar.classList.remove('active');
+            } else {
+                mainContent.classList.add('right-collapsed');
+                setTimeout(() => mapInstance()?.invalidateSize(), 260);
+            }
         });
 
         // EventBus (header toggles fire these)
