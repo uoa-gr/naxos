@@ -131,11 +131,86 @@ export class LayoutDesigner {
             node.dataset.elementId = el.id;
             if (this.selectedElementId === el.id) node.classList.add('selected');
             node.appendChild(this._renderElementContent(el));
-            node.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.selectedElementId = el.id;
+
+            if (this.selectedElementId === el.id) {
+                const handle = document.createElement('div');
+                handle.className = 'export-el-resize';
+                handle.addEventListener('mousedown', (ev) => {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+
+                    const liveSheet = this.previewEl.querySelector('.export-preview-sheet');
+                    if (!liveSheet) return;
+                    const mmToPxR = parseFloat(liveSheet.dataset.mmToPx);
+
+                    const liveNode = node;
+                    const startMouseX = ev.clientX;
+                    const startMouseY = ev.clientY;
+                    const startW = el.w;
+                    const startH = el.h;
+
+                    const onMove = (me) => {
+                        const dwMm = (me.clientX - startMouseX) / mmToPxR;
+                        const dhMm = (me.clientY - startMouseY) / mmToPxR;
+                        const newW = Math.max(5, Math.min(this.exportState.page.widthMm - el.x, startW + dwMm));
+                        const newH = Math.max(5, Math.min(this.exportState.page.heightMm - el.y, startH + dhMm));
+                        el.w = newW;
+                        el.h = newH;
+                        el._customized = true;
+                        liveNode.style.width = (newW * mmToPxR) + 'px';
+                        liveNode.style.height = (newH * mmToPxR) + 'px';
+                    };
+                    const onUp = () => {
+                        window.removeEventListener('mousemove', onMove);
+                        window.removeEventListener('mouseup', onUp);
+                        this._renderPreview();
+                        this._renderLeftPanel();
+                    };
+                    window.addEventListener('mousemove', onMove);
+                    window.addEventListener('mouseup', onUp);
+                });
+                node.appendChild(handle);
+            }
+
+            node.addEventListener('mousedown', (ev) => {
+                if (ev.target.classList && ev.target.classList.contains('export-el-resize')) return;
+                ev.stopPropagation();
+                ev.preventDefault();
+
+                const elementId = el.id;
+                this.selectedElementId = elementId;
                 this._renderLeftPanel();
                 this._renderPreview();
+
+                const liveSheet = this.previewEl.querySelector('.export-preview-sheet');
+                const liveNode = this.previewEl.querySelector(`[data-element-id="${elementId}"]`);
+                if (!liveSheet || !liveNode) return;
+                const mmToPxD = parseFloat(liveSheet.dataset.mmToPx);
+
+                const startMouseX = ev.clientX;
+                const startMouseY = ev.clientY;
+                const startX = el.x;
+                const startY = el.y;
+
+                const onMove = (me) => {
+                    const dxMm = (me.clientX - startMouseX) / mmToPxD;
+                    const dyMm = (me.clientY - startMouseY) / mmToPxD;
+                    const newX = Math.max(0, Math.min(this.exportState.page.widthMm - el.w, startX + dxMm));
+                    const newY = Math.max(0, Math.min(this.exportState.page.heightMm - el.h, startY + dyMm));
+                    el.x = newX;
+                    el.y = newY;
+                    el._customized = true;
+                    liveNode.style.left = (newX * mmToPxD) + 'px';
+                    liveNode.style.top = (newY * mmToPxD) + 'px';
+                };
+                const onUp = () => {
+                    window.removeEventListener('mousemove', onMove);
+                    window.removeEventListener('mouseup', onUp);
+                    this._renderPreview();
+                    this._renderLeftPanel();
+                };
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
             });
             sheet.appendChild(node);
         }
