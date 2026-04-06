@@ -4,6 +4,8 @@
  * Patterns are inserted into a single <defs> element appended to Leaflet's
  * SVG overlay container, then referenced by polygons via fill="url(#id)".
  */
+import { assetUrl } from '../data/DataManager.js';
+
 export class SvgPatterns {
     constructor(map) {
         this.map = map;
@@ -31,15 +33,15 @@ export class SvgPatterns {
 
     registerAllPatterns() {
         // Image-based pattern tiles
-        this.addImagePattern('pattern-hum', 'assets/symbols/pattern_hum.png', 50, 50);
-        this.addImagePattern('pattern-tafoni', 'assets/symbols/pattern_tafoni.png', 32, 32);
-        this.addImagePattern('pattern-tor', 'assets/symbols/pattern_tor.png', 48, 48);
-        this.addImagePattern('pattern-tombolo-dot', 'assets/symbols/pattern_tombolo_dot.png', 32, 32);
-        this.addImagePattern('pattern-tombolo', 'assets/symbols/pattern_tombolo_dot.png', 32, 32, '#fefabc');
-        this.addImagePattern('pattern-submerged-tombolo', 'assets/symbols/pattern_tombolo_dot.png', 32, 32, '#fefabc');
-        this.addImagePattern('pattern-colluvium', 'assets/symbols/colluvium_pattern.png', 24, 24);
-        this.addImagePattern('pattern-sand-dunes', 'assets/symbols/pattern_sand_dunes.png', 76, 80);
-        this.addImagePattern('pattern-artificial-lake', 'assets/symbols/pattern_artificial_lake.png', 24, 24);
+        this.addImagePattern('pattern-hum', assetUrl('symbols/pattern_hum.png'), 50, 50);
+        this.addImagePattern('pattern-tafoni', assetUrl('symbols/pattern_tafoni.png'), 32, 32);
+        this.addImagePattern('pattern-tor', assetUrl('symbols/pattern_tor.png'), 48, 48);
+        this.addImagePattern('pattern-tombolo-dot', assetUrl('symbols/pattern_tombolo_dot.png'), 32, 32);
+        this.addImagePattern('pattern-tombolo', assetUrl('symbols/pattern_tombolo_dot.png'), 32, 32, '#fefabc');
+        this.addImagePattern('pattern-submerged-tombolo', assetUrl('symbols/pattern_tombolo_dot.png'), 32, 32, '#fefabc');
+        this.addImagePattern('pattern-colluvium', assetUrl('symbols/colluvium_pattern.png'), 24, 24);
+        this.addImagePattern('pattern-sand-dunes', assetUrl('symbols/pattern_sand_dunes.png'), 76, 80);
+        this.addImagePattern('pattern-artificial-lake', assetUrl('symbols/pattern_artificial_lake.png'), 24, 24);
 
         // Hatch line patterns
         this.addHatchPattern('hatch-dense', { angle: 0, separation: 2, color: '#000', strokeWidth: 0.6 });

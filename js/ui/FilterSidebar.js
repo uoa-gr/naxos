@@ -132,10 +132,6 @@ export class FilterSidebar {
         const searchSection = document.createElement('div');
         searchSection.className = 'search-section';
 
-        const title = document.createElement('h3');
-        title.className = 'sidebar-section-title';
-        title.textContent = 'Search Features';
-
         const input = document.createElement('input');
         input.type = 'text';
         input.id = 'feature-search-input';
@@ -147,7 +143,6 @@ export class FilterSidebar {
         results.id = 'search-results';
         results.className = 'search-results hidden';
 
-        searchSection.appendChild(title);
         searchSection.appendChild(input);
         searchSection.appendChild(results);
         container.appendChild(searchSection);

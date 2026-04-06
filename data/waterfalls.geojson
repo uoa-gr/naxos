@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "waterfalls",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
-{ "type": "Feature", "properties": { "DSC_En": "Waterfall", "DSC_Gr": "Καταρράκτης" }, "geometry": { "type": "Point", "coordinates": [ 25.499191766311949, 37.116613488106452 ] } }
-]
-}

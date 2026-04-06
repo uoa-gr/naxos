@@ -100,8 +100,6 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
 /* Credits */
 .credits-section { margin-top: var(--spacing-lg); padding-top: var(--spacing-md); border-top: 1px solid var(--border-light); }
 .credits-section h3 { font-size: 13px; font-weight: 600; text-align: center; margin-bottom: var(--spacing-sm); }
-.credits-title-section { text-align: center; margin-bottom: var(--spacing-md); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-light); }
-.credits-main-title { font-size: 13px; font-weight: 600; text-align: center; margin-bottom: var(--spacing-sm); line-height: 1.4; }
 .credits-subtitle { text-align: center; font-size: 11px; color: var(--text-secondary); margin-bottom: var(--spacing-md); }
 .credits-logos { display: flex; justify-content: center; gap: var(--spacing-lg); margin-bottom: var(--spacing-md); }
 .credit-logo { height: 50px; width: auto; }
@@ -130,8 +128,7 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
 .layer-name { flex: 1; }
 
 /* Search */
-.search-section { margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--border-light); }
-.sidebar-section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--spacing-sm); }
+.search-section { margin-bottom: var(--spacing-md); }
 .search-input { width: 100%; padding: var(--spacing-sm); border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-size: 12px; font-family: inherit; }
 .search-input:focus { outline: none; border-color: var(--border-color); }
 .search-results { margin-top: var(--spacing-xs); max-height: 300px; overflow-y: auto; }
@@ -169,12 +166,6 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
   margin: var(--spacing-md) 0;
   padding-top: var(--spacing-md);
   border-top: 1px solid var(--border-light);
-}
-.inset-maps-section .sidebar-section-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 0 0 var(--spacing-sm) 0;
-  color: var(--text-primary);
 }
 .inset-map {
   margin-bottom: var(--spacing-md);

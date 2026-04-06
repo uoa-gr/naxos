@@ -3,6 +3,7 @@
  * grouped by geomorphological environment, plus credits section.
  */
 import { LAYERS, LAYER_GROUPS } from '../data/LayerConfig.js';
+import { assetUrl } from '../data/DataManager.js';
 
 export class LegendPanel {
     constructor(eventBus, stateManager) {
@@ -18,10 +19,8 @@ export class LegendPanel {
 
         if (this.creditsContainer) {
             // Order in the right sidebar:
-            //   1. Title block (always visible)
-            //   2. Project Info section (collapsible)
-            //   3. Reference Maps section (collapsible)
-            this._renderTitle();
+            //   1. Project Info section (collapsible)
+            //   2. Reference Maps section (collapsible)
             this._renderCredits();
             this.renderInsets();
         }
@@ -91,7 +90,7 @@ export class LegendPanel {
         const locDiv = document.createElement('div');
         locDiv.className = 'inset-map';
         const locImg = document.createElement('img');
-        locImg.src = 'assets/images/location_inset.png';
+        locImg.src = assetUrl('images/location_inset.png');
         locImg.alt = 'Location of Naxos in Greece';
         locDiv.appendChild(locImg);
         body.appendChild(locDiv);
@@ -99,7 +98,7 @@ export class LegendPanel {
         const geoDiv = document.createElement('div');
         geoDiv.className = 'inset-map';
         const geoImg = document.createElement('img');
-        geoImg.src = 'assets/images/geology_inset.png';
+        geoImg.src = assetUrl('images/geology_inset.png');
         geoImg.alt = 'Simplified geological map of Naxos';
         geoDiv.appendChild(geoImg);
         body.appendChild(geoDiv);
@@ -197,7 +196,7 @@ export class LegendPanel {
         if (entry.symbolIcon) {
             // Point layer or line layer with a symbol icon — show image
             const img = document.createElement('img');
-            img.src = 'assets/symbols/' + entry.symbolIcon;
+            img.src = assetUrl('symbols/' + entry.symbolIcon);
             img.alt = '';
             img.width = 20;
             img.height = 20;
@@ -205,7 +204,7 @@ export class LegendPanel {
         } else if (entry.patternIcon) {
             // Pattern-based polygon — show the pattern icon as a small image
             const img = document.createElement('img');
-            img.src = 'assets/symbols/' + entry.patternIcon;
+            img.src = assetUrl('symbols/' + entry.patternIcon);
             img.alt = '';
             img.width = 20;
             img.height = 20;
@@ -276,27 +275,6 @@ export class LegendPanel {
     //  Credits rendering
     // -----------------------------------------------------------------------
 
-    _renderTitle() {
-        const titleSection = document.createElement('div');
-        titleSection.className = 'credits-title-section';
-
-        const h3 = document.createElement('h3');
-        h3.className = 'credits-main-title';
-        h3.appendChild(document.createTextNode('Geomorphological Map of Greece'));
-        h3.appendChild(document.createElement('br'));
-        h3.appendChild(document.createTextNode('\u0393\u03B5\u03C9\u03BC\u03BF\u03C1\u03C6\u03BF\u03BB\u03BF\u03B3\u03B9\u03BA\u03CC\u03C2 \u03A7\u03AC\u03C1\u03C4\u03B7\u03C2 \u0395\u03BB\u03BB\u03AC\u03B4\u03BF\u03C2'));
-        titleSection.appendChild(h3);
-
-        const subtitle = document.createElement('p');
-        subtitle.className = 'credits-subtitle';
-        subtitle.appendChild(document.createTextNode('Naxos Sheet \u2014 \u03A6\u03CD\u03BB\u03BB\u03BF \u039D\u03AC\u03BE\u03BF\u03C5'));
-        subtitle.appendChild(document.createElement('br'));
-        subtitle.appendChild(document.createTextNode('Scale 1:50,000'));
-        titleSection.appendChild(subtitle);
-
-        this.creditsContainer.appendChild(titleSection);
-    }
-
     _renderCredits() {
         const { section: collapsible, body: section } = this._makeCollapsibleSection(
             'Project Info',
@@ -309,11 +287,11 @@ export class LegendPanel {
         const logosDiv = document.createElement('div');
         logosDiv.className = 'credits-logos';
         const nkuaImg = document.createElement('img');
-        nkuaImg.src = 'assets/images/nkua_logo_en.jpg';
+        nkuaImg.src = assetUrl('images/nkua_logo_en.jpg');
         nkuaImg.alt = 'NKUA';
         nkuaImg.className = 'credit-logo';
         const eagmeImg = document.createElement('img');
-        eagmeImg.src = 'assets/images/eagme_logo_en.png';
+        eagmeImg.src = assetUrl('images/eagme_logo_en.png');
         eagmeImg.alt = 'HSGME';
         eagmeImg.className = 'credit-logo';
         logosDiv.appendChild(nkuaImg);

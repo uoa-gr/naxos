@@ -6,6 +6,7 @@
  */
 
 import { LAYERS, LAYER_GROUPS, MAP_DEFAULTS } from '../data/LayerConfig.js';
+import { assetUrl } from '../data/DataManager.js';
 
 // Mapping from patternIcon filename -> SVG pattern id registered in SvgPatterns
 const PATTERN_ICON_TO_ID = {
@@ -334,7 +335,7 @@ export class LayerManager {
             const size = this._getScaledIconSize(baseSize);
             const marker = L.marker(latlng, {
                 icon: L.icon({
-                    iconUrl: `assets/symbols/${entry.symbolIcon}`,
+                    iconUrl: assetUrl('symbols/' + entry.symbolIcon),
                     iconSize: [size, size],
                     iconAnchor: [size / 2, size / 2],
                 }),
@@ -409,7 +410,7 @@ export class LayerManager {
                     const baseSize = entry.symbolSize || 24;
                     const size = this._getScaledIconSize(baseSize);
                     marker.setIcon(L.icon({
-                        iconUrl: `assets/symbols/${entry.symbolIcon}`,
+                        iconUrl: assetUrl('symbols/' + entry.symbolIcon),
                         iconSize: [size, size],
                         iconAnchor: [size / 2, size / 2],
                     }));

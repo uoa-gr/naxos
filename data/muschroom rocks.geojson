@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "muschroom rocks",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
-{ "type": "Feature", "properties": { "DSC_En": "Mushroom rock", "DSC_Gr": "Βράχος μορφής μανιταριού" }, "geometry": { "type": "Point", "coordinates": [ 25.559763296571973, 37.161080004529786 ] } }
-]
-}

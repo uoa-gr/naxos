@@ -1,6 +1,10 @@
 # Local config with secrets — never commit
 config.js
 
+# Data lives in Supabase Storage, not in git
+data/
+assets/
+
 # OS
 .DS_Store
 Thumbs.db

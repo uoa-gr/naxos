@@ -1,11 +1,23 @@
 /**
- * DataManager - Loads GeoJSON layers from Supabase Storage with local fallback
+ * DataManager - Loads GeoJSON layers from Supabase Storage
  */
 
 import { LAYERS } from './LayerConfig.js';
 
-const SUPABASE_STORAGE_BASE =
-    'https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological/data';
+const SUPABASE_BUCKET_BASE =
+    'https://gemokuqzdurkkgkyseix.supabase.co/storage/v1/object/public/naxos-geomorphological';
+const SUPABASE_STORAGE_BASE = SUPABASE_BUCKET_BASE + '/data';
+
+/**
+ * Build a public URL to any asset in the Supabase bucket.
+ * Use this everywhere instead of relative `assets/...` paths.
+ *   subpath examples: 'symbols/cave.png', 'images/nkua_logo_en.jpg'
+ */
+export function assetUrl(subpath) {
+    // Encode each path segment but keep the slashes
+    const encoded = subpath.split('/').map(encodeURIComponent).join('/');
+    return SUPABASE_BUCKET_BASE + '/' + encoded;
+}
 
 export class DataManager {
     constructor(eventBus, cacheManager, stateManager) {
@@ -53,7 +65,6 @@ export class DataManager {
         const filename = layerCfg.file;
         let geojson = null;
 
-        // Try Supabase Storage first
         try {
             const url = SUPABASE_STORAGE_BASE + '/' + encodeURIComponent(filename);
             const response = await fetch(url);
@@ -61,24 +72,12 @@ export class DataManager {
                 throw new Error('HTTP ' + response.status);
             }
             geojson = await response.json();
-        } catch (remoteErr) {
-            console.warn('DataManager: Supabase fetch failed for "' + layerId + '", trying local fallback.', remoteErr.message);
-
-            // Fallback to local file
-            try {
-                const localUrl = './data/' + filename;
-                const response = await fetch(localUrl);
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-                geojson = await response.json();
-            } catch (localErr) {
-                const err = new Error(
-                    'DataManager: Failed to load "' + layerId + '" from both Supabase and local. ' + localErr.message
-                );
-                this.eventBus.emit('data:error', { layerId, error: err });
-                throw err;
-            }
+        } catch (err) {
+            const wrapped = new Error(
+                'DataManager: Failed to load "' + layerId + '" from Supabase. ' + err.message
+            );
+            this.eventBus.emit('data:error', { layerId, error: wrapped });
+            throw wrapped;
         }
 
         // Cache the result
