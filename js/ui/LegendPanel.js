@@ -111,54 +111,60 @@ export class LegendPanel {
     // -----------------------------------------------------------------------
 
     _renderLegend() {
-        // Wrap entire legend in a top-level collapsible (matches Project Info / Reference Maps)
-        const { section: outerSection, body: outerBody } = this._makeCollapsibleSection(
-            'Legend',
-            '\u03A5\u03C0\u03CC\u03BC\u03BD\u03B7\u03BC\u03B1',
-            { expanded: true }
-        );
-        outerBody.classList.add('legend-outer-body');
+        // Flat legend: no outer collapsible, no nested boxes. The right
+        // sidebar's outlined L1 boxes are reserved for collapsible content
+        // (Project Info, Reference Maps). The legend is the map's key — it
+        // is always visible and reads as one continuous list with quiet
+        // environment headings.
 
         // Build a map: groupId -> array of legend entries (with geomType info)
         const groupEntries = {};
         for (const group of LAYER_GROUPS) {
             groupEntries[group.id] = [];
         }
-
         for (const layer of Object.values(LAYERS)) {
-            const groupId = layer.group;
-            const targetGroup = groupId || 'general';
-            if (!groupEntries[targetGroup]) {
-                groupEntries[targetGroup] = [];
-            }
+            const targetGroup = layer.group || 'general';
+            if (!groupEntries[targetGroup]) groupEntries[targetGroup] = [];
             for (const entry of layer.legendEntries) {
-                groupEntries[targetGroup].push({
-                    ...entry,
-                    geomType: layer.geomType,
-                });
+                groupEntries[targetGroup].push({ ...entry, geomType: layer.geomType });
             }
         }
 
-        // Render each environment group inside the outer body
+        const root = document.createElement('div');
+        root.className = 'legend-flat';
+
         for (const group of LAYER_GROUPS) {
             const entries = groupEntries[group.id];
             if (!entries || entries.length === 0) continue;
 
-            const { section: groupSection, body: itemsDiv } = this._makeCollapsibleSection(
-                group.label,
-                group.labelGr,
-                { expanded: true }, // legend: all environments expanded so the full key is visible
-            );
-            groupSection.classList.add('legend-subgroup');
+            const section = document.createElement('section');
+            section.className = 'legend-section';
 
-            for (const entry of entries) {
-                itemsDiv.appendChild(this._renderItem(entry));
+            const heading = document.createElement('h4');
+            heading.className = 'legend-section-title';
+            const en = document.createElement('span');
+            en.className = 'legend-section-title-en';
+            en.textContent = group.label;
+            heading.appendChild(en);
+            if (group.labelGr) {
+                const gr = document.createElement('span');
+                gr.className = 'legend-section-title-gr';
+                gr.textContent = group.labelGr;
+                heading.appendChild(gr);
             }
+            section.appendChild(heading);
 
-            outerBody.appendChild(groupSection);
+            const items = document.createElement('div');
+            items.className = 'legend-section-items';
+            for (const entry of entries) {
+                items.appendChild(this._renderItem(entry));
+            }
+            section.appendChild(items);
+
+            root.appendChild(section);
         }
 
-        this.legendContainer.appendChild(outerSection);
+        this.legendContainer.appendChild(root);
     }
 
     _renderItem(entry) {

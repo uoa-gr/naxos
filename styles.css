@@ -167,57 +167,42 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
 }
 .legend-group-items.collapsed { display: none; }
 
-/* ── Level 2: environment subgroups inside the Legend section ───────────── */
-/* L2 are quiet sub-headings, NOT peer-level toggles. The chevron, hover
-   background, and button feel are stripped so the user reads them as
-   children of the Legend L1 outline, not as siblings of it. */
-.legend-outer-body {
+/* ── Flat legend (the map key) ───────────────────────────────────────────── */
+/* The legend lives directly in #legend-panel with NO outer outlined box.
+   Outlined L1 boxes are reserved for collapsible Project Info / Reference
+   Maps. Environment groups are quiet section headings, not toggles. */
+.legend-flat {
     padding: 0;
     margin: 0;
 }
-.legend-outer-body .legend-subgroup {
-    margin: 0;
-    border: none;
+.legend-section {
+    margin: 0 0 10px 0;
 }
-.legend-outer-body .legend-subgroup .legend-group-toggle {
-    background: transparent;
-    color: var(--text-secondary);
-    padding: 10px 0 4px 0;
-    font-size: 9px;
-    font-weight: 600;
+.legend-section + .legend-section {
+    border-top: 1px solid var(--border-light);
+    padding-top: 8px;
+}
+.legend-section-title {
+    margin: 0 0 4px 0;
+    padding: 0;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
-    border: none;
-    border-radius: 0;
-    cursor: default;
-}
-.legend-outer-body .legend-subgroup .legend-group-toggle:hover {
-    background: transparent;
+    letter-spacing: 0.8px;
     color: var(--text-secondary);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
 }
-.legend-outer-body .legend-subgroup .legend-group-arrow {
-    display: none; /* L2 sub-headings have no chevron — they're not toggles */
-}
-.legend-outer-body .legend-subgroup .legend-group-label-gr {
-    color: var(--text-secondary);
-    font-weight: 300;
-    font-size: 9px;
+.legend-section-title-gr {
+    font-weight: 400;
     text-transform: none;
     letter-spacing: 0.2px;
-    opacity: 0.85;
+    font-size: 9px;
+    opacity: 0.8;
 }
-.legend-outer-body .legend-subgroup .legend-group-items {
-    padding: 0 0 4px 0;
-}
-/* Force L2 items to stay visible even if their `.collapsed` class is set,
-   since L2 headings are no longer toggles. */
-.legend-outer-body .legend-subgroup .legend-group-items.collapsed {
-    display: block;
-}
-/* First L2 sub-heading inside the legend gets less top padding so it
-   doesn't double up with the L1 outline's inner padding. */
-.legend-outer-body .legend-subgroup:first-child .legend-group-toggle {
-    padding-top: 2px;
+.legend-section-items {
+    padding: 0;
 }
 .legend-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: 3px 0; font-size: 11px; }
 .legend-swatch { width: 24px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
