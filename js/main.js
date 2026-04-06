@@ -26,6 +26,7 @@ import { FilterSidebar } from './ui/FilterSidebar.js';
 import { UIController } from './ui/UIController.js';
 import { MobileControls } from './ui/MobileControls.js';
 import { ModalManager } from './ui/ModalManager.js';
+import { ExportController, _setLayersCache } from './export/ExportController.js';
 
 /**
  * Main application class — wires all modules together.
@@ -45,6 +46,7 @@ class NaxosGeomorphApp {
         this.uiController = null;
         this.mobileControls = null;
         this.modalManager = null;
+        this.exportController = null;
     }
 
     async init() {
@@ -127,6 +129,18 @@ class NaxosGeomorphApp {
         await safeRun('ModalManager', async () => {
             this.modalManager = new ModalManager(this.eventBus, this.stateManager);
             this.modalManager.init();
+        });
+
+        await safeRun('ExportController', async () => {
+            const { LAYERS } = await import('./data/LayerConfig.js');
+            _setLayersCache(LAYERS);
+            this.exportController = new ExportController(
+                this.eventBus,
+                this.stateManager,
+                this.layerManager,
+                this.mapManager,
+            );
+            this.exportController.init();
         });
 
         // StatusBar removed — bottom bar deleted from layout
