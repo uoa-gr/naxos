@@ -294,19 +294,32 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
     color: var(--text-secondary);
     margin-bottom: 8px;
 }
+/* SINGLE column so the citation order reads unambiguously top-to-bottom.
+   A 2-column grid makes it look like the order is wrong even when it isn't. */
 .welcome-team {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 16px;
-    row-gap: 4px;
-}
-.welcome-team li {
     display: flex;
     flex-direction: column;
-    padding: 2px 0;
+    counter-reset: team-counter;
+}
+.welcome-team li {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    align-items: baseline;
+    column-gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border-light);
+}
+.welcome-team li:last-child { border-bottom: none; }
+.welcome-team li::before {
+    counter-increment: team-counter;
+    content: counter(team-counter) ".";
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: right;
 }
 .welcome-team-name {
     font-size: 11px;
@@ -352,7 +365,6 @@ body { font-family: 'Inter', sans-serif; background: var(--background-primary); 
         max-height: 100vh;
         height: auto;
     }
-    .welcome-team { grid-template-columns: 1fr; }
     .welcome-title { font-size: 16px; }
     .welcome-lede { font-size: 11px; }
 }

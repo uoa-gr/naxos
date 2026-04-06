@@ -317,7 +317,7 @@ export class LegendPanel {
             { name: 'Evangelos Spyrou',  role: 'N.K.U.A.' },
             { name: 'Irene Zananiri',    role: 'H.S.G.M.E.' },
             { name: 'Alexandra Zervakou', role: 'H.S.G.M.E.' },
-            { name: 'Alexandros Liaskos', role: 'N.K.U.A. \u00B7 Webmap developer' },
+            { name: 'Alexandros Liaskos', role: 'N.K.U.A.' },
         ];
         for (const m of members) {
             const li = document.createElement('li');
