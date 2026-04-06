@@ -1,6 +1,12 @@
 /**
  * ExportController - orchestrator for the print/export feature.
  *
+ * ⚠️  WORK IN PROGRESS — the whole `js/export/` directory is under active
+ * development. The header button (#export-btn) is currently hidden via CSS
+ * (see styles.css) so users do not see an unfinished feature. The code is
+ * wired in and loads at startup but is unreachable from the UI until the
+ * feature is polished.
+ *
  * Owns the workflow state machine:
  *   idle -> selecting-area -> drawing? -> designing -> rendering -> done
  *
