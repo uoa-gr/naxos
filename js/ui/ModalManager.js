@@ -45,6 +45,11 @@ export class ModalManager {
     }
 
     showWelcome() {
+        // Skip the splash when embedded (?embed=1) so the map is visible
+        // immediately inside an iframe preview.
+        const isEmbedded = new URLSearchParams(window.location.search).get('embed') === '1';
+        if (isEmbedded) return;
+
         // Show on every page load (no session memory).
         setTimeout(() => {
             this.welcomeModal?.classList.add('active');
