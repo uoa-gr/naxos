@@ -298,7 +298,11 @@ export class LegendPanel {
         instCard.className = 'project-card';
         const instLabel = document.createElement('div');
         instLabel.className = 'project-card-label';
-        instLabel.textContent = 'Institutions \u00B7 \u03A6\u03BF\u03C1\u03B5\u03AF\u03C2';
+        instLabel.append('Institutions \u00B7 ');
+        const instLabelGr = document.createElement('span');
+        instLabelGr.lang = 'el';
+        instLabelGr.textContent = '\u03A6\u03BF\u03C1\u03B5\u03AF\u03C2';
+        instLabel.appendChild(instLabelGr);
         instCard.appendChild(instLabel);
 
         const instList = document.createElement('div');
@@ -327,7 +331,11 @@ export class LegendPanel {
         teamCard.className = 'project-card';
         const teamLabel = document.createElement('div');
         teamLabel.className = 'project-card-label';
-        teamLabel.textContent = 'Scientific Team \u00B7 \u0395\u03C0\u03B9\u03C3\u03C4\u03B7\u03BC\u03BF\u03BD\u03B9\u03BA\u03AE \u03BF\u03BC\u03AC\u03B4\u03B1';
+        teamLabel.append('Scientific Team \u00B7 ');
+        const teamLabelGr = document.createElement('span');
+        teamLabelGr.lang = 'el';
+        teamLabelGr.textContent = '\u0395\u03C0\u03B9\u03C3\u03C4\u03B7\u03BC\u03BF\u03BD\u03B9\u03BA\u03AE \u03BF\u03BC\u03AC\u03B4\u03B1';
+        teamLabel.appendChild(teamLabelGr);
         teamCard.appendChild(teamLabel);
 
         const teamList = document.createElement('ul');
@@ -360,7 +368,11 @@ export class LegendPanel {
         citeCard.className = 'project-card';
         const citeLabel = document.createElement('div');
         citeLabel.className = 'project-card-label';
-        citeLabel.textContent = 'Citation \u00B7 \u0391\u03BD\u03B1\u03C6\u03BF\u03C1\u03AC';
+        citeLabel.append('Citation \u00B7 ');
+        const citeLabelGr = document.createElement('span');
+        citeLabelGr.lang = 'el';
+        citeLabelGr.textContent = '\u0391\u03BD\u03B1\u03C6\u03BF\u03C1\u03AC';
+        citeLabel.appendChild(citeLabelGr);
         const citeBody = document.createElement('div');
         citeBody.className = 'project-card-body project-citation';
         citeBody.textContent = 'Evelpidou, N., Saitis, G., Spyrou, E., Zananiri, I., Zervakou, A., & Liaskos, A. Detailed geomorphological mapping of Naxos island, Greece, at 1:50,000 scale. Journal of Maps (in press).';
