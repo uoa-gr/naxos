@@ -124,6 +124,7 @@ export class FilterSidebar {
 
         const labelGrSpan = document.createElement('span');
         labelGrSpan.className = 'group-label-gr';
+        labelGrSpan.lang = 'el';
         labelGrSpan.textContent = group.labelGr;
 
         const chevron = document.createElement('span');
@@ -190,6 +191,7 @@ export class FilterSidebar {
         if (item.labelGr && item.labelGr !== item.label) {
             const grSpan = document.createElement('span');
             grSpan.className = 'layer-name-gr';
+            grSpan.lang = 'el';
             grSpan.textContent = item.labelGr;
             row.appendChild(grSpan);
         }

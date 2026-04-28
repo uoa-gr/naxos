@@ -76,7 +76,7 @@ export const LAYERS = {
             },
             {
                 label: 'Tafoni',
-                labelGr: 'Κυψελοειδείς μορφες αποσάθρωσης',
+                labelGr: 'Κυψελοειδείς μορφές αποσάθρωσης',
                 matchField: 'DSC_En',
                 matchValues: ['Tafoni'],
                 style: { color: '#6e6e6e', weight: 0, fillColor: 'transparent', fillOpacity: 0 },

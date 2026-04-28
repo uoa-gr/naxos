@@ -58,6 +58,7 @@ export class LegendPanel {
         if (labelGr) {
             const labelGrSpan = document.createElement('span');
             labelGrSpan.className = 'legend-group-label-gr';
+            labelGrSpan.lang = 'el';
             labelGrSpan.textContent = labelGr;
             toggleBtn.appendChild(labelGrSpan);
         }
@@ -161,6 +162,7 @@ export class LegendPanel {
             if (group.labelGr) {
                 const gr = document.createElement('span');
                 gr.className = 'legend-section-title-gr';
+                gr.lang = 'el';
                 gr.textContent = group.labelGr;
                 heading.appendChild(gr);
             }
@@ -256,6 +258,7 @@ export class LegendPanel {
 
         const labelGr = document.createElement('span');
         labelGr.className = 'legend-label-gr';
+        labelGr.lang = 'el';
         labelGr.textContent = entry.labelGr || '';
 
         item.appendChild(swatch);
