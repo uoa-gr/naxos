@@ -104,6 +104,7 @@ export class AreaSelector {
 
             const textGr = document.createElement('span');
             textGr.className = 'export-area-option-gr';
+            textGr.lang = 'el';
             textGr.textContent = opt.labelGr;
 
             label.appendChild(radio);
@@ -137,6 +138,7 @@ export class AreaSelector {
 
             const tg = document.createElement('span');
             tg.className = 'export-draw-subopt-gr';
+            tg.lang = 'el';
             tg.textContent = sh.labelGr;
 
             lbl.appendChild(r);
