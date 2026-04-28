@@ -110,6 +110,18 @@ export class LayerManager {
         // Defer rule apply so polygon paths exist after the layers were added
         setTimeout(() => this._updateEntryMinZoomVisibility(), 0);
 
+        // Apply hiddenByDefault: layers loaded but with all legend entries off,
+        // so the sidebar shows them unchecked while the data is ready to toggle on.
+        for (const id of visibleIds) {
+            const cfg = LAYERS[id];
+            if (!cfg || !cfg.hiddenByDefault) continue;
+            const entries = cfg.legendEntries || [];
+            const count = entries.length || 1;
+            for (let i = 0; i < count; i++) {
+                this.toggleEntry(id, i, false);
+            }
+        }
+
         // React to user-edited scale rules: re-evaluate visibility immediately
         scaleRules.subscribe(() => this.refreshScaleVisibility());
 
