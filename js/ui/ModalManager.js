@@ -78,7 +78,14 @@ export class ModalManager {
         if (layerConfig) {
             const chip = document.createElement('div');
             chip.className = 'feature-detail-layer-chip';
-            chip.textContent = layerLabel + (layerLabelGr ? '  \u00B7  ' + layerLabelGr : '');
+            chip.append(layerLabel);
+            if (layerLabelGr) {
+                chip.append('  \u00B7  ');
+                const grSpan = document.createElement('span');
+                grSpan.lang = 'el';
+                grSpan.textContent = layerLabelGr;
+                chip.appendChild(grSpan);
+            }
             detailsEl.appendChild(chip);
         }
 
