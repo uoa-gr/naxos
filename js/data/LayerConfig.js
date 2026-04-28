@@ -100,7 +100,7 @@ export const LAYERS = {
         label: 'Contours 100 m',
         labelGr: 'Ισοϋψείς 100 μ',
         geomType: 'line',
-        visible: true,
+        visible: false,
         zIndex: 5,
         legendEntries: [
             {
