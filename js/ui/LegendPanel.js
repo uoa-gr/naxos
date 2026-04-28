@@ -384,7 +384,13 @@ export class LegendPanel {
         const meta = document.createElement('div');
         meta.className = 'project-meta';
         const webmapNote = document.createElement('span');
-        webmapNote.textContent = 'Webmap developed by Alexandros Liaskos';
+        webmapNote.append('Webmap developed by ');
+        const authorLink = document.createElement('a');
+        authorLink.href = 'https://liaskos.eu';
+        authorLink.target = '_blank';
+        authorLink.rel = 'noopener noreferrer';
+        authorLink.textContent = 'Alexandros Liaskos';
+        webmapNote.appendChild(authorLink);
         meta.appendChild(webmapNote);
         section.appendChild(meta);
 
